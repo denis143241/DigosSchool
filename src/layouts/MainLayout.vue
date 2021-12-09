@@ -63,7 +63,7 @@
         </div>
       </div>
       <div class="col s12 router-place" :class="{ l10: isSidebar }">
-        <section>
+        <section id="section">
           <router-view />
         </section>
       </div>
@@ -97,6 +97,7 @@ export default {
   border-radius: 0 10px 10px 0;
   padding: 5px 10px 5px 0;
 }
+
 .active-tab {
   background-color: @choosen-menu-options-color;
 }

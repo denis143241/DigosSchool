@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav id="nav">
     <div class="nav-wrapper">
       <div @click="listenerMenu" class="menu">
         <a href="#"><i class="material-icons">menu</i> </a>
