@@ -1,9 +1,9 @@
 <template>
   <div class="card category-card">
-    <div class="item">
+    <div class="card-item">
       {{ cardContent.title }}
     </div>
-    <div class="item">
+    <div class="card-item">
       <span class="material-icons"> {{ cardContent.picture }} </span>
     </div>
   </div>
@@ -25,12 +25,6 @@ export default {
 
 span {
   font-size: 80px;
-}
-.item {
-  flex: 1 1 1px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 .category {
   &-card {

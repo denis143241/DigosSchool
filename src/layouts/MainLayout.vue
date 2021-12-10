@@ -60,6 +60,10 @@
               <router-link to="/chedule"><p>Построить план</p></router-link>
             </li>
           </ul>
+          <div class="addition-menu">
+            <p><router-link to="/languages">Сменить язык</router-link></p>
+            <p>Оцените нас</p>
+          </div>
         </div>
       </div>
       <div class="col s12 router-place" :class="{ l10: isSidebar }">
@@ -88,6 +92,18 @@ export default {
 
 <style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
+.addition-menu {
+  margin-top: 100%;
+  margin-left: 30px;
+  & p {
+    padding: 0;
+    margin: 5px 0;
+    color: rgb(163, 163, 163);
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 .visible-if-choosen {
   min-width: 60px;
   height: 100%;
@@ -146,4 +162,11 @@ p {
 .sidebar {
   padding-left: 0;
 }
+
+@media only screen and (max-width: 992px) {
+  .addition-menu {
+    opacity: 0;
+  }
+}
+
 </style>

@@ -15,6 +15,25 @@ const routes = [
     component: () => import("../views/Category.vue"),
   },
   {
+    path: "/category/:id",
+    name: "CategoryName",
+    meta: { layout: "main" },
+    component: () => import("../views/ChoosenCategory.vue"),
+  },
+  // {
+  //   Не получилось
+  //   path: "/category/:id/:title",
+  //   name: "TestPage",
+  //   meta: { layout: "main" },
+  //   component: () => import("../views/TestPage.vue")
+  // },
+  {
+    path: "/test/:title",
+    name: "TestPage",
+    meta: { layout: "main" },
+    component: () => import("../views/TestPage.vue"),
+  },
+  {
     path: "/resent",
     name: "Resent",
     meta: { layout: "main" },
@@ -37,6 +56,12 @@ const routes = [
     name: "Chedule",
     meta: { layout: "main" },
     component: () => import("../views/Chedule.vue"),
+  },
+  {
+    path: "/languages",
+    name: "Languages",
+    meta: { layout: "main" },
+    component: () => import("../views/Languages.vue"),
   },
 ];
 

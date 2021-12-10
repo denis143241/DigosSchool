@@ -10,7 +10,6 @@
   font-family: "Roboto Condensed" !important;
 }
 section {
-  width: 100%;
   min-height: 100%;
   background-color: #fff;
   border-radius: 30px 0 0 0;
@@ -25,6 +24,12 @@ section {
     box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 14%),
       0 6px 30px 5px rgba(0, 0, 0, 12%), 0 8px 10px -7px rgba(0, 0, 0, 20%);
   }
+  &-item {
+    flex: 1 1 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 .flex-centered-block {
   width: 100%;
@@ -38,4 +43,15 @@ section {
 // Change materialize style
 nav ul a:hover {
   background-color: @choosen-menu-options-color;
+}
+ul.pagination {
+  display: flex;
+  justify-content: center;
+}
+
+// media
+@media only screen and (max-width: 600px) {
+  .router-place {
+    overflow-y: scroll;
+  }
 }
