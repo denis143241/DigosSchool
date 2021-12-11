@@ -5,7 +5,7 @@
       <div v-if="isSidebar" class="col l2 s12 slidenav-place">
         <div class="sidebar white-text">
           <ul>
-            <li class="menu-option">
+            <li @click="hideSidebar_notDesktop" class="menu-option">
               <div
                 class="visible-if-choosen"
                 :class="{ 'active-tab': $route.path === '/' }"
@@ -14,7 +14,7 @@
               </div>
               <router-link to="/"><p>Главная</p></router-link>
             </li>
-            <li class="menu-option">
+            <li @click="hideSidebar_notDesktop" class="menu-option">
               <div
                 class="visible-if-choosen"
                 :class="{ 'active-tab': $route.path === '/category' }"
@@ -23,7 +23,7 @@
               </div>
               <router-link to="/category"><p>Категории</p></router-link>
             </li>
-            <li class="menu-option">
+            <li @click="hideSidebar_notDesktop" class="menu-option">
               <div
                 class="visible-if-choosen"
                 :class="{ 'active-tab': $route.path === '/resent' }"
@@ -32,7 +32,7 @@
               </div>
               <router-link to="/resent"><p>Пройденные</p></router-link>
             </li>
-            <li class="menu-option">
+            <li @click="hideSidebar_notDesktop" class="menu-option">
               <div
                 class="visible-if-choosen"
                 :class="{ 'active-tab': $route.path === '/create-lesson' }"
@@ -41,7 +41,7 @@
               </div>
               <router-link to="/create-lesson"><p>Создать тест</p></router-link>
             </li>
-            <li class="menu-option">
+            <li @click="hideSidebar_notDesktop" class="menu-option">
               <div
                 class="visible-if-choosen"
                 :class="{ 'active-tab': $route.path === '/lesson-book' }"
@@ -50,7 +50,7 @@
               </div>
               <router-link to="/lesson-book"><p>Учебник</p></router-link>
             </li>
-            <li class="menu-option">
+            <li @click="hideSidebar_notDesktop" class="menu-option">
               <div
                 class="visible-if-choosen"
                 :class="{ 'active-tab': $route.path === '/chedule' }"
@@ -66,7 +66,12 @@
           </div>
         </div>
       </div>
-      <div class="col s12 router-place" :class="{ l10: isSidebar }">
+      <!-- :style тут стоит переписать навсегда в статичные св-ва! -->
+      <div
+        class="col s12 router-place"
+        :class="{ l10: isSidebar }"
+        :style="{ 'overflow-y': 'scroll' }"
+      >
         <section id="section">
           <router-view />
         </section>
@@ -76,7 +81,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import appNavigation from "../components/appNavigation.vue";
 export default {
   components: {
@@ -84,8 +89,19 @@ export default {
   },
   setup() {
     const isSidebar = ref(true);
+    const isDesktop = computed(() => document.body.clientWidth > 1200);
+    onMounted(() => {
+      if (!isDesktop.value) {
+        isSidebar.value = false;
+      }
+    });
+    const hideSidebar_notDesktop = () => {
+      if (!isDesktop.value) {
+        isSidebar.value = false;
+      }
+    };
 
-    return { isSidebar };
+    return { isSidebar, hideSidebar_notDesktop };
   },
 };
 </script>
@@ -168,5 +184,4 @@ p {
     opacity: 0;
   }
 }
-
 </style>

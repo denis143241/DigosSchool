@@ -4,7 +4,20 @@
     v-for="test in data"
     :key="test"
     :test="test"
-  />
+  >
+    <template #action-button>
+      <button
+        v-if="!inBook(test.title)"
+        :key="isInBook"
+        @click.stop
+        @click="addToBook(test)"
+        class="button waves-effect waves-dark btn"
+      >
+        Добавить в учебник
+      </button>
+      <span v-else :key="isInBook" class="material-icons"> done </span>
+    </template>
+  </choose-test-card>
 </template>
 
 <script>
@@ -29,11 +42,20 @@ export default {
 
     const data = ref([]);
 
+    const addToBook = (test) => {
+      if (store.state.Book[test.title] === undefined) {
+        store.commit("addToLearn", test.title);
+      }
+    };
+
     const redirectToTest = (test) => {
       router.push(`/test/${test.title}`);
-    }
+    };
+    const inBook = (title) => {
+      return store.state.Book[title] !== undefined;
+    };
 
-    return { data, redirectToTest };
+    return { data, redirectToTest, addToBook, inBook };
   },
 };
 </script>

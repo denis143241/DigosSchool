@@ -20,13 +20,6 @@ const routes = [
     meta: { layout: "main" },
     component: () => import("../views/ChoosenCategory.vue"),
   },
-  // {
-  //   Не получилось
-  //   path: "/category/:id/:title",
-  //   name: "TestPage",
-  //   meta: { layout: "main" },
-  //   component: () => import("../views/TestPage.vue")
-  // },
   {
     path: "/test/:title",
     name: "TestPage",
@@ -50,6 +43,12 @@ const routes = [
     name: "LessonBook",
     meta: { layout: "main" },
     component: () => import("../views/LessonBook.vue"),
+  },
+  {
+    path: "/lesson-book/:title",
+    name: "Learning",
+    meta: { layout: "main" },
+    component: () => import("../views/LearningTest.vue"),
   },
   {
     path: "/chedule",

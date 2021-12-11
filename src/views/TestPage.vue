@@ -46,12 +46,12 @@
     </div>
   </template>
   <template v-else>
-
+    <p>{{ score }}</p>
   </template>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 
@@ -95,6 +95,12 @@ export default {
 
     const key = computed(() => words.value[counter.value]);
     const corrected = computed(() => test.value.words[key.value].join("/"));
+
+    watch(showAnswer, (newValue) => {
+      if (newValue) {
+        withError.value = true;
+      }
+    });
 
     const handlerAnswer = () => {
       const isTrueAnswer = CompareAnswer(
@@ -140,6 +146,7 @@ export default {
       skip,
       showAnswer,
       corrected,
+      score,
     };
   },
 };
@@ -241,6 +248,7 @@ p {
         margin: 0;
         position: relative;
         transition: 0.25s;
+        user-select: none;
         &::after {
           content: "";
           width: 100%;

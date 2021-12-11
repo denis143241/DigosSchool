@@ -24,8 +24,16 @@ export default createStore({
         },
       },
     ],
+    Book: {},
   },
-  mutations: {},
+  mutations: {
+    addToLearn(state, title) {
+      state.Book[title] = false;
+    },
+    deleteLesson(state, lesson) {
+      delete state.Book[lesson.title];
+    },
+  },
   actions: {},
   modules: {},
 });

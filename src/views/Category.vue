@@ -125,7 +125,7 @@ export default {
   justify-content: center;
   align-items: center;
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 992px) {
   .pagination-block {
     padding-bottom: 50px;
   }

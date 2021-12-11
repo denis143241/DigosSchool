@@ -1,16 +1,23 @@
 <template>
   <div class="card choose-test-card">
-    <div class="card-item">
-      {{ test.title }}
-    </div>
-    <div class="card-item">
-      {{ test.category }}
-    </div>
-    <div class="card-item">
-      {{ test.language }}
-    </div>
-    <div class="card-item lightner-block">
-      <div class="lightner"></div>
+    <div class="row">
+      <div class="col l3 m3 s6">
+        <div class="card-item title">{{ test.title }}</div>
+      </div>
+      <div class="col l3 m3 s6">
+        <div class="card-item">{{ test.category }}</div>
+      </div>
+      <div class="col l3 m3 s6">
+        <div class="card-item">{{ test.language }}</div>
+      </div>
+      <div class="col l3 m3 s6">
+        <div class="card-item"><div class="lightner"></div></div>
+      </div>
+      <div class="col s12">
+        <div class="card-item">
+          <slot name="action-button"></slot>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -26,10 +33,13 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
 .choose-test-card {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70px;
   margin: 10px 0;
 }
 .lightner {
@@ -38,6 +48,16 @@ export default {
   border-radius: 10px;
   background-color: red;
   box-shadow: 0 0 7px rgba(255, 0, 0, 80%);
+}
+.row {
+  width: 100%;
+  margin: 0;
+}
+.card-item {
+  min-height: 40px;
+}
+.title {
+  font-weight: 700;
 }
 @media only screen and (max-width: 600px) {
   .card-item {
