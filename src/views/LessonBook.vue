@@ -73,13 +73,6 @@ export default {
 
 <style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
-.page-title {
-  margin: 20px 0 30px;
-  font-weight: 700;
-  font-family: @main-font;
-  text-align: center;
-  font-size: 40px;
-}
 .button {
   margin: 10px 20px;
 }
