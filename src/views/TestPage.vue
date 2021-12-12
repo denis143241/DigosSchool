@@ -46,13 +46,30 @@
     </div>
   </template>
   <template v-else>
-    <p>{{ score }}</p>
+    <div class="results">
+      <div class="title">Тест завершен.</div>
+      <p class="results-description">
+        Вы набрали {{ score }} из {{ words.length }}
+      </p>
+      <div class="btns">
+        <button
+          @click="addBookAndRedirectToBook($route.params.title)"
+          class="button btn waves-effect waves-light grey darken-4"
+        >
+          В учебник
+        </button>
+
+        <button @click="tryAgain" class="button btn waves-effect waves-light">
+          Пробовать ещё
+        </button>
+      </div>
+    </div>
   </template>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
@@ -62,11 +79,10 @@ import {
   shakeArray,
 } from "../assets/js/TestHandlers/testHandlers";
 
-// При нажатии показать ответ тоже должен срабатывать флаг withError !!!
-
 export default {
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const store = useStore();
     const test = ref({});
     const words = ref([]);
@@ -99,6 +115,11 @@ export default {
     watch(showAnswer, (newValue) => {
       if (newValue) {
         withError.value = true;
+      }
+    });
+    watch(score, (newValue) => {
+      if (newValue >= words.value.length) {
+        setComplete(route.params.title);
       }
     });
 
@@ -136,6 +157,25 @@ export default {
       showAnswer.value = false;
       withError.value = false;
     };
+    const addBookAndRedirectToBook = (testName) => {
+      if (store.state.Book[testName] === undefined) {
+        store.commit("addToLearn", testName);
+      }
+      redirectToBook(testName);
+    };
+    const redirectToBook = (testName) => {
+      router.push(`/lesson-book/${testName}`);
+    };
+    const tryAgain = () => {
+      counter.value = 0;
+      isBgGreen.value = null;
+      withError.value = false;
+      score.value = 0;
+      words.value = shakeArray(words.value);
+    };
+    const setComplete = (nameTest) => {
+      localStorage.setItem(nameTest, true);
+    };
 
     return {
       words,
@@ -147,6 +187,8 @@ export default {
       showAnswer,
       corrected,
       score,
+      addBookAndRedirectToBook,
+      tryAgain,
     };
   },
 };
@@ -268,6 +310,28 @@ p {
           }
         }
       }
+    }
+  }
+}
+.results {
+  & .title {
+    text-align: center;
+    font-family: @main-font;
+    font-size: 35px;
+    font-weight: 700;
+    margin: 30px 0;
+  }
+  &-description {
+    text-align: center;
+    font-family: @main-font;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  & .btns {
+    text-align: center;
+    margin: 40px 0;
+    & .button {
+      margin: 0 20px;
     }
   }
 }

@@ -18,7 +18,7 @@ const routes = [
     path: "/category/:id",
     name: "CategoryName",
     meta: { layout: "main" },
-    component: () => import("../views/ChoosenCategory.vue"),
+    component: () => import("../views/CategoryChoosen.vue"),
   },
   {
     path: "/test/:title",

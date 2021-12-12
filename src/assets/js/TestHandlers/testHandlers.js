@@ -31,3 +31,8 @@ export const CompareAnswer = (answer, correctList) => {
     ? true
     : false;
 };
+
+export const isDoneFromLocalStorage = (nameTest) => {
+  // Проверяем выполнен ли тест когда либо ранее
+  return localStorage.getItem(nameTest);
+};

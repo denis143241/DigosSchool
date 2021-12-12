@@ -11,7 +11,12 @@
         <div class="card-item">{{ test.language }}</div>
       </div>
       <div class="col l3 m3 s6">
-        <div class="card-item"><div class="lightner"></div></div>
+        <div class="card-item">
+          <div
+            class="lightner"
+            :class="{ 'lightner-red': !isDone, 'lightner-green': isDone }"
+          ></div>
+        </div>
       </div>
       <div class="col s12">
         <div class="card-item">
@@ -23,12 +28,24 @@
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
+import { isDoneFromLocalStorage } from "../assets/js/TestHandlers/testHandlers";
+import { onMounted } from "@vue/runtime-core";
 export default {
   props: {
     test: {
       type: Object,
       required: true,
     },
+  },
+  setup(props) {
+    const isDone = ref(false);
+
+    onMounted(() => {
+      isDone.value = isDoneFromLocalStorage(props.test.title);
+    });
+
+    return { isDone };
   },
 };
 </script>
@@ -46,8 +63,14 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  background-color: red;
-  box-shadow: 0 0 7px rgba(255, 0, 0, 80%);
+  &-red {
+    background-color: red;
+    box-shadow: 0 0 7px rgba(255, 0, 0, 80%);
+  }
+  &-green {
+    background-color: #4aac4d;
+    box-shadow: 0 0 7px #a5d6a7;
+  }
 }
 .row {
   width: 100%;
