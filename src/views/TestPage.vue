@@ -68,11 +68,14 @@
 </template>
 
 <script>
+// Переписан с использованием API
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
+import { api_get } from "../js/api_functions";
+// import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
+
 import {
   keysFromObject,
   CompareAnswer,
@@ -94,9 +97,11 @@ export default {
 
     let counter = ref(0);
 
-    onMounted(() => {
+    onMounted(async () => {
       // Загрузка теста и его составляющих
-      test.value = searchTestOnTitle(store.state.AllTests, route.params.title);
+      // test.value = searchTestOnTitle(store.state.AllTests, route.params.title);
+      const Url = `/api/test/${route.params.title}`;
+      test.value = await api_get(Url);
       words.value = keysFromObject(test.value.words);
       words.value = shakeArray(words.value);
 
@@ -124,6 +129,10 @@ export default {
     });
 
     const handlerAnswer = () => {
+      if (counter.value === words.value) {
+        // Условия при которых не нужно обрабатывать ответ
+        return;
+      }
       const isTrueAnswer = CompareAnswer(
         answer.value,
         test.value.words[key.value]

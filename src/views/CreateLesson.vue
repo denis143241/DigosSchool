@@ -122,12 +122,15 @@
 </template>
 
 <script>
+// Переписан с использованием API
+
 import M from "../../node_modules/materialize-css";
 import { computed, ref } from "@vue/reactivity";
 import { keysFromObject } from "../assets/js/TestHandlers/testHandlers";
 import { nextTick, onMounted } from "@vue/runtime-core";
 import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
 import { useStore } from "vuex";
+import { api_post } from "../js/api_functions";
 
 // При создание теста необходимо сбрасывать отображение select поля!
 // Ограничить создание пустого теста
@@ -213,24 +216,30 @@ export default {
       }
       return true;
     };
-    const createLesson = () => {
+    const createLesson = async () => {
       const lesson = collectData();
-      debugger;
       if (!isCorrectLesson(lesson)) {
         return;
       }
       if (searchTestOnTitle(store.state.AllTests, lesson.title) !== undefined) {
         return;
       }
+      // Добавление во vuex!
       store.commit("pushToTests", lesson);
+      // Конец Добавления во vuex!
+
+      // Добавление в БД!
+      const res = await api_post('/api/create-lesson', 'POST', lesson)
+      console.log(res)
+      // Доавление в БД конец!
+
       inputKey.value = "";
       testName.value = "";
       inputsTranslates.value = [];
       lang.value = "Выберите";
       category.value = "";
-      for (let key in dictionary.value) {
-        delete dictionary.value[key];
-      }
+      dictionary.value = new Object();
+      console.log(dictionary.value);
     };
 
     return {

@@ -34,6 +34,7 @@
 </template>
 
 <script>
+// Создать в БД категории и загружать на клиент их из БД
 import categoryCard from "../components/categoryCard.vue";
 import { ref, computed } from "vue";
 export default {

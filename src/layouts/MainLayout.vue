@@ -1,4 +1,28 @@
 <template>
+  <app-popup
+    @closePopup="closePopup"
+    @confirm="confirm"
+    :title="'Оцените нас'"
+    v-if="popup"
+  >
+    <template #popup-content>
+      <form>
+        <div class="rating">
+          <img
+            class="star"
+            v-for="(i, idx) in rating"
+            :key="i"
+            :src="i"
+            @click="rate(idx)"
+          />
+        </div>
+        <textarea
+          class="textarea"
+          placeholder="Мы ждем ваших пожеланий"
+        ></textarea>
+      </form>
+    </template>
+  </app-popup>
   <div class="main-layout">
     <app-navigation @listenerMenu="isSidebar = !isSidebar" />
     <div class="row content-place">
@@ -62,7 +86,7 @@
           </ul>
           <div class="addition-menu">
             <p><router-link to="/languages">Сменить язык</router-link></p>
-            <p>Оцените нас</p>
+            <p @click="openPopup">Оцените нас</p>
           </div>
         </div>
       </div>
@@ -83,13 +107,23 @@
 <script>
 import { ref, onMounted, computed } from "vue";
 import appNavigation from "../components/appNavigation.vue";
+import appPopup from "../components/appPopup.vue";
 export default {
   components: {
     appNavigation,
+    appPopup,
   },
   setup() {
     const isSidebar = ref(true);
     const isDesktop = computed(() => document.body.clientWidth > 1200);
+    const popup = ref(false);
+    const rating = ref([
+      require("../assets/empty-star.png"),
+      require("../assets/empty-star.png"),
+      require("../assets/empty-star.png"),
+      require("../assets/empty-star.png"),
+      require("../assets/empty-star.png"),
+    ]);
     onMounted(() => {
       if (!isDesktop.value) {
         isSidebar.value = false;
@@ -100,14 +134,67 @@ export default {
         isSidebar.value = false;
       }
     };
+    const rate = (idx) => {
+      for (let i = 0; i < rating.value.length; i++) {
+        if (i <= idx) {
+          rating.value[i] = require("../assets/yellow-star.png");
+        } else {
+          rating.value[i] = require("../assets/empty-star.png");
+        }
+      }
+      console.log(rating.value);
+    };
+    const openPopup = () => {
+      popup.value = true;
+    };
+    const closePopup = () => {
+      popup.value = false;
+    };
+    const confirm = () => {
+      closePopup();
+    };
 
-    return { isSidebar, hideSidebar_notDesktop };
+    return {
+      isSidebar,
+      popup,
+      rating,
+      rate,
+      hideSidebar_notDesktop,
+      openPopup,
+      closePopup,
+      confirm,
+    };
   },
 };
 </script>
 
 <style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
+.star {
+  width: 32px;
+  height: 32px;
+  margin: 3px;
+  &:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+}
+form {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.textarea {
+  font-family: @main-font;
+  font-size: 16px;
+  font-weight: 400;
+  border-radius: 10px;
+  margin: 20px 0;
+  padding: 10px 15px;
+  height: 100px;
+}
 .addition-menu {
   margin-top: 100%;
   margin-left: 30px;
@@ -182,6 +269,14 @@ p {
 @media only screen and (max-width: 992px) {
   .addition-menu {
     opacity: 0;
+  }
+  .menu-option {
+    font-size: 24px !important;
+  }
+}
+@media only screen and (max-width: 1150px) {
+  .menu-option {
+    font-size: 16px;
   }
 }
 </style>

@@ -9,13 +9,25 @@ const routes = [
     component: Home,
   },
   {
+    path: "/registration",
+    name: "Registration",
+    meta: { layout: "login" },
+    component: () => import("../views/Registration.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    meta: { layout: "login" },
+    component: () => import("../views/Login.vue"),
+  },
+  {
     path: "/category",
     name: "Category",
     meta: { layout: "main" },
     component: () => import("../views/Category.vue"),
   },
   {
-    path: "/category/:id",
+    path: "/category/:category",
     name: "CategoryName",
     meta: { layout: "main" },
     component: () => import("../views/CategoryChoosen.vue"),

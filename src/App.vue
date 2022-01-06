@@ -1,14 +1,23 @@
 <template>
-  <main-layout>
+  <component :is="layout">
     <router-view />
-  </main-layout>
+  </component>
 </template>
 
 <script>
 import MainLayout from "./layouts/MainLayout.vue";
+import LoginLayout from "./layouts/LoginLayout.vue";
 export default {
   components: {
     MainLayout,
+    LoginLayout,
+  },
+  computed: {
+    layout() {
+      return this.$route.meta.layout
+        ? this.$route.meta.layout + "-layout"
+        : "error-layout";
+    },
   },
 };
 </script>
