@@ -1,13 +1,13 @@
 <template>
   <choose-test-card
     @click="redirectToTest(test)"
-    v-for="(test, idx) in data"
+    v-for="test in data"
     :key="test"
     :test="test"
   >
     <template #action-button>
       <button
-        v-if="!inBook[idx]"
+        v-if="!inBook(test.title)"
         @click.stop
         @click="addToBook(test)"
         class="button waves-effect waves-dark btn"
@@ -23,44 +23,32 @@
 // Переписан с использованием API ПОЧТИ
 // Переписать функцию addToBook (необходим зарегестрированный пользователь)
 
-import { ref, onMounted, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 // import { searchOfCategory } from "../assets/js/searchOfCategory";
 
 import chooseTestCard from "../components/chooseTestCard.vue";
-import { api_get, api_get_auth, api_post_auth } from "../js/api_functions";
+import { api_get_auth, api_post_auth } from "../js/api_functions";
 export default {
   components: {
     chooseTestCard,
   },
   setup() {
-    const route = useRoute();
+    const store = useStore();
     const router = useRouter();
 
     onMounted(async () => {
       // data.value = searchOfCategory(store.state.AllTests, route.params.id);
-      const Url = `/api/category/${route.params.category}`;
-      data.value = await api_get(Url);
+      const Url = `/api/own-tests`;
+      data.value = await api_get_auth(Url, localStorage.getItem("token"));
     });
 
     const data = ref([]);
 
-    const inBook = computed(() => {
-      const output = [];
-      data.value.forEach(async (test) => {
-        const res = await api_get_auth(
-          `/api/in-book/${test.title}`,
-          localStorage.getItem("token")
-        );
-        output.push(res.inBook);
-      });
-      return output;
-    });
-
     const addToBook = async (test) => {
-      const Url = "/api/add-to-book";
       const res = await api_post_auth(
-        Url,
+        "/api/add-to-own-book",
         "POST",
         { title: test.title },
         localStorage.getItem("token")
@@ -69,7 +57,10 @@ export default {
     };
 
     const redirectToTest = (test) => {
-      router.push(`/test/${test.title}`);
+      router.push(`/test/own_${test.title}`);
+    };
+    const inBook = (title) => {
+      return store.state.Book[title] !== undefined;
     };
 
     return { data, redirectToTest, addToBook, inBook };

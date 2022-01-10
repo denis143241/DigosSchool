@@ -6,23 +6,37 @@
       </div>
       <router-link class="brand-logo" to="/">DIGOSSCHOOL</router-link>
       <ul class="right hide-on-med-and-down">
-        <li><a href="#">Профиль</a></li>
-        <li><a href="#">Выйти</a></li>
+        <li v-if="isSignIn"><a href="#">Профиль</a></li>
+        <li v-if="isSignIn" @click="logout_exit">
+          <a href="#">Выйти</a>
+        </li>
+        <li v-else><router-link to="/login" href="#">Войти</router-link></li>
       </ul>
     </div>
   </nav>
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 // import M from "../../node_modules/materialize-css/dist/js/materialize.min.js";
 export default {
   emits: ["listenerMenu"],
   setup(_, { emit }) {
+    const router = useRouter();
     const isSidebar = ref(false);
     const listenerMenu = () => emit("listenerMenu");
+    const isSignIn = computed(() => {
+      return localStorage.getItem("token") || false;
+    });
 
-    return { isSidebar, listenerMenu };
+    const logout_exit = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push("/login");
+    };
+
+    return { isSidebar, isSignIn, listenerMenu, logout_exit };
   },
 };
 </script>

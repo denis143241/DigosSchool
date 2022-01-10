@@ -83,6 +83,15 @@
               </div>
               <router-link to="/chedule"><p>Построить план</p></router-link>
             </li>
+            <li @click="hideSidebar_notDesktop" class="menu-option">
+              <div
+                class="visible-if-choosen"
+                :class="{ 'active-tab': $route.path === '/own-tests' }"
+              >
+                <span class="material-icons"> account_circle </span>
+              </div>
+              <router-link to="/own-tests"><p>Свои тесты</p></router-link>
+            </li>
           </ul>
           <div class="addition-menu">
             <p><router-link to="/languages">Сменить язык</router-link></p>

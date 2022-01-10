@@ -3,6 +3,7 @@
     v-if="alertData"
     :success="alertData.success"
     :message="alertData.message"
+    @close="closeAlert"
   />
   <div class="form-wrapper">
     <div class="form-header">
@@ -38,11 +39,13 @@ import M from "../../node_modules/materialize-css";
 import appAlert from "../components/appAlert.vue";
 import { onMounted, ref } from "@vue/runtime-core";
 import { api_post } from "../js/api_functions";
+import { useRouter } from "vue-router";
 export default {
   components: {
     appAlert,
   },
   setup() {
+    const router = useRouter();
     const languages = ["Английский", "Немецкий", "Испанский", "Французский"];
     const standartSelect = "Выберите язык";
     const user = ref({
@@ -64,11 +67,28 @@ export default {
       if (res.err) {
         const additionErrors = res.err.errors.map((err) => err.msg).join(". ");
         alertData.value.message += `.  ${additionErrors}`;
+        return;
       }
-      console.log(res);
+      if (!res.success) return;
+      alertData.value.message +=
+        ". Сейчас Вы будете перенаправлены на страницу авторизации";
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
     };
 
-    return { languages, standartSelect, user, alertData, registration };
+    const closeAlert = () => {
+      alertData.value = null;
+    };
+
+    return {
+      languages,
+      standartSelect,
+      user,
+      alertData,
+      registration,
+      closeAlert,
+    };
   },
 };
 </script>

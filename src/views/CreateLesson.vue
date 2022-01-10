@@ -130,7 +130,7 @@ import { keysFromObject } from "../assets/js/TestHandlers/testHandlers";
 import { nextTick, onMounted } from "@vue/runtime-core";
 import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
 import { useStore } from "vuex";
-import { api_post } from "../js/api_functions";
+import { api_post_auth } from "../js/api_functions";
 
 // При создание теста необходимо сбрасывать отображение select поля!
 // Ограничить создание пустого теста
@@ -229,8 +229,13 @@ export default {
       // Конец Добавления во vuex!
 
       // Добавление в БД!
-      const res = await api_post('/api/create-lesson', 'POST', lesson)
-      console.log(res)
+      const res = await api_post_auth(
+        "/api/create-user-lesson",
+        "POST",
+        lesson,
+        localStorage.getItem("token")
+      );
+      console.log(res);
       // Доавление в БД конец!
 
       inputKey.value = "";
@@ -239,7 +244,6 @@ export default {
       lang.value = "Выберите";
       category.value = "";
       dictionary.value = new Object();
-      console.log(dictionary.value);
     };
 
     return {

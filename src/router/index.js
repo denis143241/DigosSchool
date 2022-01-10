@@ -69,6 +69,12 @@ const routes = [
     component: () => import("../views/Chedule.vue"),
   },
   {
+    path: "/own-tests",
+    name: "OwnTests",
+    meta: { layout: "main" },
+    component: () => import("../views/OwnTests.vue"),
+  },
+  {
     path: "/languages",
     name: "Languages",
     meta: { layout: "main" },
