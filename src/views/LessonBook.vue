@@ -6,6 +6,9 @@
       :key="lesson"
       :test="lesson"
     >
+      <template #predicate-mine
+        ><p :style="{ paddingRight: '5px' }">(свой)</p></template
+      >
       <template #action-button>
         <div class="row">
           <div class="col m2 s12">
@@ -81,10 +84,9 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import { api_get_auth } from "../js/api_functions";
+import { useFetch } from "../use/fetch";
 
 import chooseTestCard from "../components/chooseTestCard.vue";
 export default {
@@ -95,12 +97,10 @@ export default {
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
-    const lessons = ref(null); // lessons = {fromUser: [], fromGeneral: []}
+    const { response: lessons, request_auth: fetchLessons } =
+      useFetch("/api/book");
 
-    onMounted(async () => {
-      const Url = "/api/book";
-      lessons.value = await api_get_auth(Url, localStorage.getItem("token"));
-    });
+    fetchLessons();
 
     const deleteLesson = (lesson) => {
       store.commit("deleteLesson", lesson);

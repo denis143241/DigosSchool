@@ -2,7 +2,9 @@
   <div class="card choose-test-card">
     <div class="row">
       <div class="col l3 m3 s6">
-        <div class="card-item title">{{ test.title }}</div>
+        <div class="card-item title">
+          <slot name="predicate-mine" />{{ test.title }}
+        </div>
       </div>
       <div class="col l3 m3 s6">
         <div class="card-item">{{ test.category }}</div>

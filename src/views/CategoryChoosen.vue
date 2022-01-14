@@ -23,12 +23,13 @@
 // Переписан с использованием API ПОЧТИ
 // Переписать функцию addToBook (необходим зарегестрированный пользователь)
 
-import { ref, onMounted, computed } from "vue";
+import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 // import { searchOfCategory } from "../assets/js/searchOfCategory";
 
 import chooseTestCard from "../components/chooseTestCard.vue";
-import { api_get, api_get_auth, api_post_auth } from "../js/api_functions";
+import { api_get_auth, api_post_auth } from "../js/api_functions";
+import { useFetch } from "../use/fetch";
 export default {
   components: {
     chooseTestCard,
@@ -36,14 +37,16 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const { response: data, request: fetchTests } = useFetch(
+      `/api/category/${route.params.category}`
+    );
+    fetchTests();
 
-    onMounted(async () => {
-      // data.value = searchOfCategory(store.state.AllTests, route.params.id);
-      const Url = `/api/category/${route.params.category}`;
-      data.value = await api_get(Url);
-    });
-
-    const data = ref([]);
+    // onMounted(async () => {
+    //   // data.value = searchOfCategory(store.state.AllTests, route.params.id);
+    //   const Url = `/api/category/${route.params.category}`;
+    //   data.value = await api_get(Url);
+    // });
 
     const inBook = computed(() => {
       const output = [];

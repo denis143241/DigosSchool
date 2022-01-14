@@ -1,69 +1,62 @@
 <template>
-  <choose-test-card
-    @click="redirectToTest(test)"
-    v-for="test in data"
-    :key="test"
-    :test="test"
-  >
-    <template #action-button>
-      <button
-        v-if="!inBook(test.title)"
-        @click.stop
-        @click="addToBook(test)"
-        class="button waves-effect waves-dark btn"
+  <template v-if="isloaded">
+    <div class="cards">
+      <choose-test-card
+        @click="redirectToTest(test)"
+        v-for="test in data"
+        :key="test"
+        :test="test"
       >
-        Добавить в учебник
-      </button>
-      <span v-else class="material-icons"> done </span>
-    </template>
-  </choose-test-card>
+        <template #action-button>
+          <button
+            v-if="!ownBook.ownBook.includes(test.title)"
+            @click.stop
+            @click="addToBook(test.title)"
+            class="button waves-effect waves-dark btn"
+          >
+            Добавить в учебник
+          </button>
+          <span v-else class="material-icons"> done </span>
+        </template>
+      </choose-test-card>
+    </div>
+  </template>
+  <app-preloader v-else />
 </template>
 
 <script>
-// Переписан с использованием API ПОЧТИ
-// Переписать функцию addToBook (необходим зарегестрированный пользователь)
-
-import { ref, onMounted } from "vue";
-import { useStore } from "vuex";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
-// import { searchOfCategory } from "../assets/js/searchOfCategory";
-
+import { useOwnBook } from "../use/ownBook";
+import { useOwnTests } from "../use/ownTests";
 import chooseTestCard from "../components/chooseTestCard.vue";
-import { api_get_auth, api_post_auth } from "../js/api_functions";
+import appPreloader from "../components/appPreloader.vue";
+
 export default {
   components: {
     chooseTestCard,
+    appPreloader,
   },
   setup() {
-    const store = useStore();
+    const { data: ownBook, add: addToBook } = useOwnBook();
+    const { data } = useOwnTests();
     const router = useRouter();
-
-    onMounted(async () => {
-      // data.value = searchOfCategory(store.state.AllTests, route.params.id);
-      const Url = `/api/own-tests`;
-      data.value = await api_get_auth(Url, localStorage.getItem("token"));
+    const isloaded = computed(() => {
+      console.log(ownBook.value?.ownBook);
+      return ownBook.value?.ownBook;
     });
-
-    const data = ref([]);
-
-    const addToBook = async (test) => {
-      const res = await api_post_auth(
-        "/api/add-to-own-book",
-        "POST",
-        { title: test.title },
-        localStorage.getItem("token")
-      );
-      console.log(res);
-    };
 
     const redirectToTest = (test) => {
       router.push(`/test/own_${test.title}`);
     };
-    const inBook = (title) => {
-      return store.state.Book[title] !== undefined;
-    };
 
-    return { data, redirectToTest, addToBook, inBook };
+    return { data, redirectToTest, addToBook, ownBook, isloaded };
   },
 };
 </script>
+
+<style lang="less" scoped>
+.cards {
+  margin-bottom: 100px;
+}
+</style>
