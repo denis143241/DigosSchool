@@ -9,19 +9,75 @@
     <div class="form-header">
       <p class="header">Регистрация</p>
     </div>
-    <input v-model="user.login" type="text" placeholder="Введите логин" />
-    <input
-      v-model="user.password"
-      type="password"
-      placeholder="Введите пароль"
-    />
-    <input v-model="user.name" type="text" placeholder="Ваше имя" />
-    <select v-model="user.language" id="rf">
+    <div class="input-field">
+      <input
+        v-model="form.login.value"
+        :class="{ invalid: !form.login.valid && form.login.touched }"
+        type="text"
+        @blur="form.login.blur"
+        id="login"
+      />
+      <label for="login">Логин</label>
+      <small
+        class="red-text text-darken-3"
+        v-if="!form.login.valid && form.login.touched"
+        >Поле должно быть заполнено</small
+      >
+    </div>
+    <div class="input-field">
+      <input
+        v-model="form.password.value"
+        type="password"
+        :class="{ invalid: !form.password.valid && form.password.touched }"
+        @blur="form.password.blur"
+        id="paswword"
+      />
+      <label for="password">Пароль</label>
+      <small
+        v-if="form.password.errors.required && form.password.touched"
+        class="red-text text-darken-3"
+        >Поле должно быть заполнено</small
+      >
+      <small
+        v-else-if="form.password.errors.minLength && form.password.touched"
+        class="red-text text-darken-3"
+        >Пароль должен быть более 3 символов</small
+      >
+      <small
+        v-else-if="form.password.errors.maxLength && form.password.touched"
+        class="red-text text-darken-3"
+        >Пароль не может превышать 17 символов</small
+      >
+    </div>
+    <div class="input-field">
+      <input
+        v-model="form.name.value"
+        :class="{ invalid: !form.name.valid && form.name.touched }"
+        type="text"
+        @blur="form.name.blur"
+        id="name"
+      />
+      <label for="name">Имя</label>
+      <small
+        v-if="form.name.errors.required && form.name.touched"
+        class="red-text text-darken-3"
+        >Поле должно быть заполнено</small
+      >
+    </div>
+    <select
+      v-model="form.language.value"
+      :class="{ invalid: !form.language.valid && form.language.touched }"
+      id="rf"
+      @blur="form.language.blur"
+    >
       <option value="" disabled selected>{{ standartSelect }}</option>
       <option v-for="lang in languages" :key="lang" :value="lang">
         {{ lang }}
       </option>
     </select>
+    <small v-if="form.language.errors.required && form.language.touched"
+      >Поле должно быть заполнено</small
+    >
     <div class="form-buttons">
       <button @click="registration" class="btn waves-effect waves-light">
         Сохранить
@@ -89,8 +145,16 @@ export default {
     });
 
     const registration = async () => {
+      if (!form.valid) return;
       const Url = "/api/reg";
-      const res = await api_post(Url, "POST", user.value);
+      const body = {
+        login: form.login.value,
+        password: form.password.value,
+        language: form.language.value,
+        name: form.name.value,
+      };
+      console.log(body);
+      const res = await api_post(Url, "POST", body);
       alertData.value = res;
       if (res.err) {
         const additionErrors = res.err.errors.map((err) => err.msg).join(". ");
