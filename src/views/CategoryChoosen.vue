@@ -9,7 +9,7 @@
     >
       <template #action-button>
         <button
-          v-if="!generalBook.data[idx]"
+          v-if="!generalBook?.data[idx]"
           @click.stop
           @click="addToBook(test.title)"
           class="button waves-effect waves-dark btn"

@@ -40,12 +40,40 @@ import appAlert from "../components/appAlert.vue";
 import { onMounted, ref } from "@vue/runtime-core";
 import { api_post } from "../js/api_functions";
 import { useRouter } from "vue-router";
+import { useForm } from "../use/form";
+
+const required = (val) => !!val;
+const minLength = (num) => (val) => val.length >= num;
+const maxLength = (num) => (val) => val.length <= num;
+
 export default {
   components: {
     appAlert,
   },
   setup() {
     const router = useRouter();
+    const form = useForm({
+      login: {
+        value: "",
+        validators: { required },
+      },
+      password: {
+        value: "",
+        validators: {
+          required,
+          minLength: minLength(4),
+          maxLength: maxLength(17),
+        },
+      },
+      name: {
+        value: "",
+        validators: { required },
+      },
+      language: {
+        value: "",
+        validators: { required },
+      },
+    });
     const languages = ["Английский", "Немецкий", "Испанский", "Французский"];
     const standartSelect = "Выберите язык";
     const user = ref({
@@ -88,6 +116,7 @@ export default {
       alertData,
       registration,
       closeAlert,
+      form,
     };
   },
 };

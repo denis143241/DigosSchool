@@ -1,69 +1,72 @@
 <template>
-  <template v-if="counter != words.length">
-    <div
-      class="progress"
-      :style="{ width: `${(counter / words.length) * 100}%` }"
-    ></div>
-    <div
-      class="wrapper"
-      :class="{
-        'true-answer': isBgGreen === true,
-        'false-answer': isBgGreen === false,
-        'common-bg': isBgGreen === null,
-      }"
-    >
-      <div class="test-place">
-        <div class="flex-container">
-          <div class="word">
-            <p>{{ words[counter] }}</p>
-          </div>
-          <div class="centered-content">
-            <div class="answer-block">
-              <input
-                autocomplete="off"
-                id="answer"
-                v-model="answer"
-                placeholder="Введите ответ"
-              />
-              <span @click="handlerAnswer" class="material-icons">
-                arrow_forward_ios
-              </span>
+  <app-preloader v-if="loading" />
+  <template v-else>
+    <template v-if="counter != words.length">
+      <div
+        class="progress"
+        :style="{ width: `${(counter / words.length) * 100}%` }"
+      ></div>
+      <div
+        class="wrapper"
+        :class="{
+          'true-answer': isBgGreen === true,
+          'false-answer': isBgGreen === false,
+          'common-bg': isBgGreen === null,
+        }"
+      >
+        <div class="test-place">
+          <div class="flex-container">
+            <div class="word">
+              <p>{{ words[counter] }}</p>
             </div>
-            <transition name="bounce">
-              <div v-if="showAnswer" class="correct-answers">
-                <p>Правильно: {{ corrected }}</p>
+            <div class="centered-content">
+              <div class="answer-block">
+                <input
+                  autocomplete="off"
+                  id="answer"
+                  v-model="answer"
+                  placeholder="Введите ответ"
+                />
+                <span @click="handlerAnswer" class="material-icons">
+                  arrow_forward_ios
+                </span>
               </div>
-            </transition>
-          </div>
-          <div class="skip">
-            <ul>
-              <li><p @click="skip">Пропустить</p></li>
-              <li><p @click="showAnswer = true">Показать ответ</p></li>
-            </ul>
+              <transition name="bounce">
+                <div v-if="showAnswer" class="correct-answers">
+                  <p>Правильно: {{ corrected }}</p>
+                </div>
+              </transition>
+            </div>
+            <div class="skip">
+              <ul>
+                <li><p @click="skip">Пропустить</p></li>
+                <li><p @click="showAnswer = true">Показать ответ</p></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </template>
-  <template v-else>
-    <div class="results">
-      <div class="title">Тест завершен.</div>
-      <p class="results-description">
-        Вы набрали {{ score }} из {{ words.length }}
-      </p>
-      <div class="btns">
-        <button
-          @click="addBookAndRedirectToBook($route.params.title)"
-          class="button btn waves-effect waves-light grey darken-4"
-        >
-          В учебник
-        </button>
+    </template>
+    <template v-else>
+      <div class="results">
+        <div class="title">Тест завершен.</div>
+        <p class="results-description">
+          Вы набрали {{ score }} из {{ words.length }}
+        </p>
+        <div class="btns">
+          <button
+            @click="addBookAndRedirectToBook($route.params.title)"
+            class="button btn waves-effect waves-light grey darken-4"
+          >
+            В учебник
+          </button>
 
-        <button @click="tryAgain" class="button btn waves-effect waves-light">
-          Пробовать ещё
-        </button>
+          <button @click="tryAgain" class="button btn waves-effect waves-light">
+            Пробовать ещё
+          </button>
+        </div>
       </div>
-    </div>
+    </template>
   </template>
 </template>
 
@@ -81,8 +84,12 @@ import {
   CompareAnswer,
   shakeArray,
 } from "../assets/js/TestHandlers/testHandlers";
+import appPreloader from "../components/appPreloader.vue";
 
 export default {
+  components: {
+    appPreloader,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -109,7 +116,6 @@ export default {
           localStorage.getItem("token")
         );
         test.value = handledRes.test;
-        console.log(test.value);
       } else {
         // Ищем среди общих тестов
         const Url = `/api/test/${route.params.title}`;
@@ -129,6 +135,7 @@ export default {
 
     const key = computed(() => words.value[counter.value]);
     const corrected = computed(() => test.value.words[key.value].join("/"));
+    const loading = computed(() => Object.keys(test.value).length === 0);
 
     watch(showAnswer, (newValue) => {
       if (newValue) {
@@ -211,6 +218,7 @@ export default {
       score,
       addBookAndRedirectToBook,
       tryAgain,
+      loading,
     };
   },
 };
