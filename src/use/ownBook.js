@@ -3,6 +3,7 @@ import { useFetch } from "./fetch";
 export function useOwnBook() {
   const { response: data, request_auth: fetchOwnBook } =
     useFetch("/api/own-book");
+
   if (!data.value) {
     fetchOwnBook();
   }
@@ -28,5 +29,21 @@ export function useOwnBook() {
     return response;
   };
 
-  return { data, reload, add };
+  const del = async (title) => {
+    const options = {
+      headers: {
+        "Content-type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ title }),
+    };
+    const { response, request_auth: deleteFromBook } = useFetch(
+      "/api/delete-from-own-book",
+      options
+    );
+    await deleteFromBook();
+    return response;
+  };
+
+  return { data, reload, add, del };
 }

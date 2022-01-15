@@ -1,110 +1,109 @@
 <template>
   <div class="page-title">Учебник</div>
-  <div class="book">
-    <choose-test-card
-      v-for="lesson in lessons?.fromUser"
-      :key="lesson"
-      :test="lesson"
-    >
-      <template #predicate-mine
-        ><p :style="{ paddingRight: '5px' }">(свой)</p></template
+  <app-preloader v-if="isLoad" />
+  <template v-else>
+    <div class="book">
+      <choose-test-card
+        v-for="lesson in lessons?.fromUser"
+        :key="lesson"
+        :test="lesson"
       >
-      <template #action-button>
-        <div class="row">
-          <div class="col m2 s12">
-            <button
-              @click.stop
-              @click="redirectToLearn(lesson)"
-              class="button waves-effect waves-dark btn"
-            >
-              Учить
-            </button>
-          </div>
+        <template #predicate-mine
+          ><p :style="{ paddingRight: '5px' }">(свой)</p></template
+        >
+        <template #action-button>
+          <div class="row">
+            <div class="col m2 s12">
+              <button
+                @click.stop
+                @click="redirectToLearn(lesson)"
+                class="button waves-effect waves-dark btn"
+              >
+                Учить
+              </button>
+            </div>
 
-          <div class="col m2 s12">
-            <button
-              @click.stop
-              @click="redirectToTest(lesson)"
-              class="button waves-effect waves-dark btn"
-            >
-              Пройти тест
-            </button>
+            <div class="col m2 s12">
+              <button
+                @click.stop
+                @click="redirectToTest(lesson)"
+                class="button waves-effect waves-dark btn"
+              >
+                Пройти тест
+              </button>
+            </div>
+            <div class="col m2 s12 offset-m3">
+              <button
+                @click.stop
+                @click="delFromOwnBook(lesson.title)"
+                class="button waves-effect waves-light btn red darken-3"
+              >
+                Удалить
+              </button>
+            </div>
           </div>
-          <div class="col m2 s12 offset-m3">
-            <button
-              @click.stop
-              @click="deleteLesson(lesson)"
-              class="button waves-effect waves-light btn red darken-3"
-            >
-              Удалить
-            </button>
-          </div>
-        </div>
-      </template>
-    </choose-test-card>
-    <choose-test-card
-      v-for="lesson in lessons?.fromGeneral"
-      :key="lesson"
-      :test="lesson"
-    >
-      <template #action-button>
-        <div class="row">
-          <div class="col m2 s12">
-            <button
-              @click.stop
-              @click="redirectToLearn(lesson)"
-              class="button waves-effect waves-dark btn"
-            >
-              Учить
-            </button>
-          </div>
+        </template>
+      </choose-test-card>
+      <choose-test-card
+        v-for="lesson in lessons?.fromGeneral"
+        :key="lesson"
+        :test="lesson"
+      >
+        <template #action-button>
+          <div class="row">
+            <div class="col m2 s12">
+              <button
+                @click.stop
+                @click="redirectToLearn(lesson)"
+                class="button waves-effect waves-dark btn"
+              >
+                Учить
+              </button>
+            </div>
 
-          <div class="col m2 s12">
-            <button
-              @click.stop
-              @click="redirectToTest(lesson)"
-              class="button waves-effect waves-dark btn"
-            >
-              Пройти тест
-            </button>
+            <div class="col m2 s12">
+              <button
+                @click.stop
+                @click="redirectToTest(lesson)"
+                class="button waves-effect waves-dark btn"
+              >
+                Пройти тест
+              </button>
+            </div>
+            <div class="col m2 s12 offset-m3">
+              <button
+                @click.stop
+                @click="deleteLesson(lesson)"
+                class="button waves-effect waves-light btn red darken-3"
+              >
+                Удалить
+              </button>
+            </div>
           </div>
-          <div class="col m2 s12 offset-m3">
-            <button
-              @click.stop
-              @click="deleteLesson(lesson)"
-              class="button waves-effect waves-light btn red darken-3"
-            >
-              Удалить
-            </button>
-          </div>
-        </div>
-      </template>
-    </choose-test-card>
-  </div>
+        </template>
+      </choose-test-card>
+    </div>
+  </template>
 </template>
 
 <script>
-import { useStore } from "vuex";
+// На данный момент тесты удаляются но надо заного фетчить тесты чтобы увидеть резульат
+// Начать делать редиректы
 import { useRoute, useRouter } from "vue-router";
-import { useFetch } from "../use/fetch";
+import { useBook } from "../use/book";
 
 import chooseTestCard from "../components/chooseTestCard.vue";
+import appPreloader from "../components/appPreloader.vue";
 export default {
   components: {
     chooseTestCard,
+    appPreloader,
   },
   setup() {
-    const store = useStore();
     const router = useRouter();
     const route = useRoute();
-    const { response: lessons, request_auth: fetchLessons } =
-      useFetch("/api/book");
+    const { data: lessons, isLoad, delFromOwnBook } = useBook();
 
-    fetchLessons();
-
-    const deleteLesson = (lesson) => {
-      store.commit("deleteLesson", lesson);
-    };
     const redirectToLearn = (lesson) => {
       router.push(`${route.path}/${lesson.title}`);
     };
@@ -112,13 +111,16 @@ export default {
       router.push(`/test/${test.title}`);
     };
 
-    return { lessons, deleteLesson, redirectToLearn, redirectToTest };
+    return { lessons, isLoad, delFromOwnBook, redirectToLearn, redirectToTest };
   },
 };
 </script>
 
 <style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
+.book {
+  margin-bottom: 100px;
+}
 .button {
   margin: 10px 20px;
 }
