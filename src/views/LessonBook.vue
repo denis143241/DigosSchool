@@ -73,7 +73,7 @@
             <div class="col m2 s12 offset-m3">
               <button
                 @click.stop
-                @click="deleteLesson(lesson)"
+                @click="deleteFromGeneralBook(lesson.title)"
                 class="button waves-effect waves-light btn red darken-3"
               >
                 Удалить
@@ -102,7 +102,12 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const { data: lessons, isLoad, delFromOwnBook } = useBook();
+    const {
+      data: lessons,
+      isLoad,
+      delFromOwnBook,
+      delFromBook: deleteFromGeneralBook,
+    } = useBook();
 
     const redirectToLearn = (lesson) => {
       router.push(`${route.path}/${lesson.title}`);
@@ -111,7 +116,14 @@ export default {
       router.push(`/test/${test.title}`);
     };
 
-    return { lessons, isLoad, delFromOwnBook, redirectToLearn, redirectToTest };
+    return {
+      lessons,
+      isLoad,
+      delFromOwnBook,
+      deleteFromGeneralBook,
+      redirectToLearn,
+      redirectToTest,
+    };
   },
 };
 </script>

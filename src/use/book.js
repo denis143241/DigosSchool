@@ -1,4 +1,5 @@
 import { useFetch } from "./fetch";
+import { useGeneralBook } from "./generalBook";
 import { useOwnBook } from "./ownBook";
 
 export function useBook() {
@@ -12,6 +13,12 @@ export function useBook() {
     fetchBook();
   }
 
+  const delFromBook = async (title) => {
+    const { del } = useGeneralBook();
+    await del(title);
+    removeDataFromClient_general(title);
+  };
+
   const delFromOwnBook = async (title) => {
     const { del } = useOwnBook();
     await del(title);
@@ -24,5 +31,11 @@ export function useBook() {
     );
   };
 
-  return { data, isLoad, delFromOwnBook };
+  const removeDataFromClient_general = (title) => {
+    data.value.fromGeneral = data.value.fromGeneral.filter(
+      (obj) => obj.title !== title
+    );
+  };
+
+  return { data, isLoad, delFromBook, delFromOwnBook };
 }
