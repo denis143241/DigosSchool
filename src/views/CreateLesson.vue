@@ -128,8 +128,7 @@ import M from "../../node_modules/materialize-css";
 import { computed, ref } from "@vue/reactivity";
 import { keysFromObject } from "../assets/js/TestHandlers/testHandlers";
 import { nextTick, onMounted } from "@vue/runtime-core";
-import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
-import { useStore } from "vuex";
+import { useAdmin } from "../use/admin";
 import { api_post_auth } from "../js/api_functions";
 
 // При создание теста необходимо сбрасывать отображение select поля!
@@ -137,7 +136,11 @@ import { api_post_auth } from "../js/api_functions";
 
 export default {
   setup() {
-    const store = useStore();
+    const {
+      getAdminMode,
+      createLesson: createLesson_admin,
+      isAdmin,
+    } = useAdmin();
     const dictionary = ref({});
     const translatesFields = ref(1);
     const keys = computed(() => {
@@ -221,21 +224,26 @@ export default {
       if (!isCorrectLesson(lesson)) {
         return;
       }
-      if (searchTestOnTitle(store.state.AllTests, lesson.title) !== undefined) {
-        return;
-      }
-      // Добавление во vuex!
-      store.commit("pushToTests", lesson);
-      // Конец Добавления во vuex!
 
       // Добавление в БД!
-      const res = await api_post_auth(
-        "/api/create-user-lesson",
-        "POST",
-        lesson,
-        localStorage.getItem("token")
-      );
-      console.log(res);
+      // Admin-mode \\
+      if (isAdmin && getAdminMode()) {
+        // Переменная загрузки = true
+        const { response } = await createLesson_admin(lesson);
+        // Переменная загрузки = false
+        console.log(response);
+        // ~Admin-mode \\
+      } else {
+        // User-mode \\
+        const res = await api_post_auth(
+          "/api/create-user-lesson",
+          "POST",
+          lesson,
+          localStorage.getItem("token")
+        );
+        console.log(res);
+        // ~User-mode \\
+      }
       // Доавление в БД конец!
 
       inputKey.value = "";

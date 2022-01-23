@@ -3,13 +3,13 @@
   <template v-else>
     <choose-test-card
       @click="redirectToTest(test)"
-      v-for="(test, idx) in data"
+      v-for="test in data"
       :key="test"
       :test="test"
     >
       <template #action-button>
         <button
-          v-if="!generalBook?.data[idx]"
+          v-if="!generalBook?.data.includes(test.title)"
           @click.stop
           @click="addToBook(test.title)"
           class="button waves-effect waves-dark btn"
