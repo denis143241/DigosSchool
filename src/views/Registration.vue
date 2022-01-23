@@ -81,7 +81,11 @@
       >Поле должно быть заполнено</small
     >
     <div class="form-buttons">
-      <button @click="registration" class="btn waves-effect waves-light">
+      <button
+        :disabled="!form.valid"
+        @click="registration"
+        class="btn waves-effect waves-light"
+      >
         Сохранить
       </button>
     </div>
