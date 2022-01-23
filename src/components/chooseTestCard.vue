@@ -22,6 +22,7 @@
       </div>
       <div class="col s12">
         <div class="card-item">
+          <!-- <app-preloader v-if="loading" /> -->
           <slot name="action-button"></slot>
         </div>
       </div>
@@ -30,24 +31,44 @@
 </template>
 
 <script>
+// Все что закомментировано планировалось для прелоадера на каждом компоненте
+// Не вышло: Обновление книги сопоставить с прелоадером на компоненте, конкретно
+// на том что вызвал обновление книги.
+
 import { ref } from "@vue/reactivity";
 import { isDoneFromLocalStorage } from "../assets/js/TestHandlers/testHandlers";
 import { onMounted } from "@vue/runtime-core";
+// import { useGeneralBook } from "../use/generalBook";
+// import appPreloader from "../components/appPreloader.vue";
 export default {
+  // components: {
+  //   appPreloader,
+  // },
   props: {
     test: {
       type: Object,
       required: true,
     },
   },
+  emits: ["bookChanged"],
   setup(props) {
     const isDone = ref(false);
+    const loading = ref(false);
+    // const { add: addToGeneralBook } = useGeneralBook();
 
     onMounted(() => {
       isDone.value = isDoneFromLocalStorage(props.test.title);
     });
 
-    return { isDone };
+    // const add_toGeneral = async (title) => {
+    //   console.log(111111);
+    //   loading.value = true;
+    //   await addToGeneralBook(title);
+    //   emit("bookChanged");
+    //   loading.value = false;
+    // };
+
+    return { isDone, loading };
   },
 };
 </script>

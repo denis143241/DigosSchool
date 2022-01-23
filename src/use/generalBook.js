@@ -44,5 +44,5 @@ export function useGeneralBook() {
     return response;
   };
 
-  return { data, isLoad, add, del };
+  return { data, isLoad, add, del, getGeneralBook };
 }

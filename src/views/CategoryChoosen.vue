@@ -28,6 +28,7 @@ import { useFetch } from "../use/fetch";
 import { useGeneralBook } from "../use/generalBook";
 import chooseTestCard from "../components/chooseTestCard.vue";
 import appPreloader from "../components/appPreloader.vue";
+import { ref } from "@vue/reactivity";
 export default {
   components: {
     chooseTestCard,
@@ -36,10 +37,12 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const loading = ref(false);
     const {
       data: generalBook,
       add: addToBook,
       isLoad: isLoadedBook,
+      getGeneralBook,
     } = useGeneralBook();
     const {
       response: data,
@@ -52,6 +55,12 @@ export default {
       router.push(`/test/${test.title}`);
     };
 
+    const reloadBook = () => {
+      loading.value = true;
+      getGeneralBook();
+      loading.value = false;
+    };
+
     return {
       data,
       generalBook,
@@ -59,6 +68,7 @@ export default {
       isLoadedBook,
       redirectToTest,
       addToBook,
+      reloadBook,
     };
   },
 };
