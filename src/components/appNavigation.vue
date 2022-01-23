@@ -4,8 +4,18 @@
       <div @click="listenerMenu" class="menu">
         <a href="#"><i class="material-icons">menu</i> </a>
       </div>
-      <router-link class="brand-logo" to="/">DIGOSSCHOOL</router-link>
+      <router-link class="brand-logo" to="/"
+        >DIGOSSCHOOL<small class="notify-admin-row" v-if="isAdmin && adminMode">
+          (admin)</small
+        ></router-link
+      >
       <ul class="right hide-on-med-and-down">
+        <li v-if="isAdmin && !adminMode" @click="setAdminMode">
+          <a href="#">Включить режим администратора</a>
+        </li>
+        <li v-if="isAdmin && adminMode" @click="disableAdminMode">
+          <a href="#">Выключить режим администратора</a>
+        </li>
         <li v-if="isSignIn"><a href="#">Профиль</a></li>
         <li v-if="isSignIn" @click="logout_exit">
           <a href="#">Выйти</a>
@@ -17,17 +27,25 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useFetch } from "../use/fetch";
 // import M from "../../node_modules/materialize-css/dist/js/materialize.min.js";
 export default {
   emits: ["listenerMenu"],
   setup(_, { emit }) {
     const router = useRouter();
     const isSidebar = ref(false);
+    const adminMode = ref(false);
+    const { response: roles, request_auth: getRoles } = useFetch("/api/roles");
+    getRoles();
     const listenerMenu = () => emit("listenerMenu");
     const isSignIn = computed(() => {
       return localStorage.getItem("token") || false;
+    });
+    const isAdmin = computed(() => {
+      if (roles.value === undefined) return false;
+      return roles.value.roles.includes("ADMIN");
     });
 
     const logout_exit = () => {
@@ -36,7 +54,30 @@ export default {
       router.push("/login");
     };
 
-    return { isSidebar, isSignIn, listenerMenu, logout_exit };
+    onMounted(() => {
+      adminMode.value = !!localStorage.getItem("adminMode");
+    });
+
+    const setAdminMode = () => {
+      adminMode.value = true;
+      localStorage.setItem("adminMode", true);
+    };
+
+    const disableAdminMode = () => {
+      adminMode.value = false;
+      localStorage.removeItem("adminMode");
+    };
+
+    return {
+      isSidebar,
+      isSignIn,
+      isAdmin,
+      adminMode,
+      setAdminMode,
+      disableAdminMode,
+      listenerMenu,
+      logout_exit,
+    };
   },
 };
 </script>
@@ -44,7 +85,7 @@ export default {
 <style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
 nav {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: transparent;
   padding: 0 30px;
   box-shadow: none !important;
 }
@@ -61,6 +102,18 @@ nav {
   left: 0;
   & .material-icons {
     font-size: 30px;
+  }
+}
+.notify-admin-row {
+  font-size: 20px;
+  margin-left: 10px;
+}
+@media only screen and (max-width: 600px) {
+  .notify-admin-row {
+    position: absolute;
+    right: -90px;
+    font-size: 16px;
+    font-weight: 400;
   }
 }
 </style>
