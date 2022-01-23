@@ -66,7 +66,9 @@
     </div>
     <select
       v-model="form.language.value"
-      :class="{ invalid: !form.language.valid && form.language.touched }"
+      :class="{
+        'invalid-select': !form.language.valid && form.language.touched,
+      }"
       id="rf"
       @blur="form.language.blur"
     >
@@ -91,16 +93,16 @@
 </template>
 
 <script>
+// На будущее исправить Select. При отправке формы он единственный никак не выделяется при ошибке.
+// Однако отправка формы работает корректно. Добавить лишь динамичную проверку для CSS.
+
 import M from "../../node_modules/materialize-css";
 import appAlert from "../components/appAlert.vue";
 import { onMounted, ref } from "@vue/runtime-core";
 import { api_post } from "../js/api_functions";
 import { useRouter } from "vue-router";
 import { useForm } from "../use/form";
-
-const required = (val) => !!val;
-const minLength = (num) => (val) => val.length >= num;
-const maxLength = (num) => (val) => val.length <= num;
+import { required, minLength, maxLength } from "../use/validators";
 
 export default {
   components: {
@@ -228,5 +230,8 @@ export default {
       }
     }
   }
+}
+.invalid-select {
+  border-bottom: 2px solid red;
 }
 </style>
