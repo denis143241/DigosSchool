@@ -51,15 +51,15 @@
     </div>
     <div class="input-field">
       <input
-        v-model="form.name.value"
-        :class="{ invalid: !form.name.valid && form.name.touched }"
+        v-model="form.username.value"
+        :class="{ invalid: !form.username.valid && form.username.touched }"
         type="text"
-        @blur="form.name.blur"
+        @blur="form.username.blur"
         id="name"
       />
-      <label for="name">Имя</label>
+      <label for="name">Имя пользователя</label>
       <small
-        v-if="form.name.errors.required && form.name.touched"
+        v-if="form.username.errors.required && form.username.touched"
         class="red-text text-darken-3"
         >Поле должно быть заполнено</small
       >
@@ -127,7 +127,7 @@ export default {
           maxLength: maxLength(17),
         },
       },
-      name: {
+      username: {
         value: "",
         validators: { required },
       },
@@ -141,7 +141,7 @@ export default {
     const user = ref({
       login: "",
       password: "",
-      name: "",
+      username: "",
       language: "",
     });
     const alertData = ref(null);
@@ -152,15 +152,18 @@ export default {
 
     const registration = async () => {
       if (!form.valid) return;
-      const Url = "/api/reg";
+
+      // Preparing Data for request
+      const API_URL = "/api/user/reg";
       const body = {
         login: form.login.value,
         password: form.password.value,
         language: form.language.value,
-        name: form.name.value,
+        username: form.username.value,
       };
-      console.log(body);
-      const res = await api_post(Url, "POST", body);
+
+      // Request
+      const res = await api_post(API_URL, "POST", body);
       alertData.value = res;
       if (res.err) {
         const additionErrors = res.err.errors.map((err) => err.msg).join(". ");
