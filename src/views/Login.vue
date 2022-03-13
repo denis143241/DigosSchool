@@ -95,49 +95,38 @@ export default {
         },
       },
     });
-    // const user = ref({
-    //   login: "",
-    //   password: "",
-    // });
-    const dangeredInputs = ref({ login: false, password: false });
-    const alertData = ref(null);
 
-    // const checkInputs = () => {
-    //   dangeredInputs.value.login = user.value.login.length > 0 ? false : true;
-    //   dangeredInputs.value.password =
-    //     user.value.password.length >= 4 && user.value.password.length <= 17
-    //       ? false
-    //       : true;
-    //   user.value.password = "";
-    // };
+    const alertData = ref(null);
 
     const logIn = async () => {
       if (!form.valid) return;
-      const Url = "/api/auth";
-      const res = await api_post(Url, "POST", {
+
+      const API_URL = "/api/user/auth";
+      const res = await api_post(API_URL, "POST", {
         login: form.login.value,
         password: form.password.value,
       });
+
       alertData.value = res;
-      // checkInputs();
+
       if (res.err) {
         const additionErrors = res.err.errors.map((err) => err.msg).join(". ");
         alertData.value.message += `.  ${additionErrors}`;
         return;
       }
       if (!res.success) return;
-      alertData.value.message = `Добро пожаловать ${res.user.name}`;
+      alertData.value.message = `Добро пожаловать ${res.user.username}`;
       storeUser(res.token, res.user);
       setTimeout(() => {
         router.push("/");
-      }, 1000);
+      }, 500);
     };
 
     const closeAlert = () => {
       alertData.value = null;
     };
 
-    return { form, alertData, dangeredInputs, logIn, closeAlert };
+    return { form, alertData, logIn, closeAlert };
   },
 };
 </script>
