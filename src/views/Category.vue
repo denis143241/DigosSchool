@@ -84,15 +84,14 @@ export default {
       }
       return amount;
     });
-    const amountOnPage = computed(
-      () =>
-        Math.floor(
-          (document.getElementById("section").clientHeight -
-            document.getElementById("nav").clientHeight -
-            60) /
-            170
-        ) * amountOnWidth.value
-    );
+    const amountOnPage = computed(() => {
+      // h - не всегда число, если перейти на эту вкладку через url то не считываются id section и nav
+      let h =
+        document.getElementById("section")?.clientHeight -
+        document.getElementById("nav")?.clientHeight -
+        60;
+      return Math.floor((isNaN(h) ? 340 : h) / 170) * amountOnWidth.value;
+    });
     const paginatedCategories = computed(() =>
       categories.slice(
         page.value * amountOnPage.value,

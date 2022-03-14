@@ -30,21 +30,23 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useFetch } from "../use/fetch";
-// import M from "../../node_modules/materialize-css/dist/js/materialize.min.js";
+
 export default {
   emits: ["listenerMenu"],
   setup(_, { emit }) {
     const router = useRouter();
     const isSidebar = ref(false);
     const adminMode = ref(false);
-    const { response: roles, request_auth: getRoles } = useFetch("/api/roles");
+    const { response: roles, request_auth: getRoles } =
+      useFetch("/api/user/roles");
     getRoles();
     const listenerMenu = () => emit("listenerMenu");
     const isSignIn = computed(() => {
       return localStorage.getItem("token") || false;
     });
+
     const isAdmin = computed(() => {
-      if (roles.value === undefined) return false;
+      if (!roles.value) return false;
       return roles.value.roles.includes("ADMIN");
     });
 

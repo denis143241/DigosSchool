@@ -72,7 +72,7 @@ import appAlert from "../components/appAlert.vue";
 import { ref } from "@vue/runtime-core";
 import { api_post } from "../js/api_functions";
 import { useRouter } from "vue-router";
-import { storeUser } from "../js/autorization";
+import { onAuthorization } from "../js/autorization";
 import { useForm } from "../use/form";
 import { required, minLength, maxLength } from "../use/validators";
 export default {
@@ -116,7 +116,11 @@ export default {
       }
       if (!res.success) return;
       alertData.value.message = `Добро пожаловать ${res.user.username}`;
-      storeUser(res.token, res.user);
+
+      // Дейтсивия происходящие сразу после успешной авторизации
+      onAuthorization(res.token);
+
+      // Переход на главную страницу
       setTimeout(() => {
         router.push("/");
       }, 500);
