@@ -76,7 +76,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-import { api_get, api_get_auth } from "../js/api_functions";
+import { api_get_auth } from "../js/api_functions";
 // import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
 
 import {
@@ -107,20 +107,24 @@ export default {
     onMounted(async () => {
       // Загрузка теста и его составляющих
       // test.value = searchTestOnTitle(store.state.AllTests, route.params.title);
-      const devidedTitle = route.params.title.split("_");
-      if (devidedTitle.length > 1 && devidedTitle.includes("own")) {
-        // Ищем собственные тесты
-        const Url = `/api/own-test/${devidedTitle[1]}`;
-        const handledRes = await api_get_auth(
-          Url,
-          localStorage.getItem("token")
-        );
-        test.value = handledRes.test;
-      } else {
-        // Ищем среди общих тестов
-        const Url = `/api/test/${route.params.title}`;
-        test.value = await api_get(Url);
-      }
+
+      // const devidedTitle = route.params.title.split("_");
+      // if (devidedTitle.length > 1 && devidedTitle.includes("own")) {
+      //   // Ищем собственные тесты
+      //   const Url = `/api/own-test/${devidedTitle[1]}`;
+      //   const handledRes = await api_get_auth(
+      //     Url,
+      //     localStorage.getItem("token")
+      //   );
+      //   test.value = handledRes.test;
+      // } else {
+      //   // Ищем среди общих тестов
+      //   const Url = `/api/test/${route.params.title}`;
+      //   test.value = await api_get(Url);
+      // }
+      const API_URL = `/api/test/${route.params.id}`;
+      test.value = await api_get_auth(API_URL, localStorage.getItem("token"));
+      console.log(test.value);
       words.value = keysFromObject(test.value.words);
       words.value = shakeArray(words.value);
 

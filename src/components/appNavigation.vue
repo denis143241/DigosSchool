@@ -29,7 +29,7 @@
 <script>
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useFetch } from "../use/fetch";
+import { useRoles } from "../use/roles";
 
 export default {
   emits: ["listenerMenu"],
@@ -37,16 +37,17 @@ export default {
     const router = useRouter();
     const isSidebar = ref(false);
     const adminMode = ref(false);
-    const { response: roles, request_auth: getRoles } =
-      useFetch("/api/user/roles");
-    getRoles();
+    const { response: roles } = useRoles();
+
     const listenerMenu = () => emit("listenerMenu");
     const isSignIn = computed(() => {
       return localStorage.getItem("token") || false;
     });
 
     const isAdmin = computed(() => {
-      if (!roles.value) return false;
+      if (roles.value === undefined || roles.value.success === false) {
+        return false;
+      }
       return roles.value.roles.includes("ADMIN");
     });
 
