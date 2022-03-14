@@ -1,4 +1,10 @@
 <template>
+  <app-alert
+    v-if="isShowAlert"
+    :success="alertSuccess"
+    :message="alertMessage"
+    @close="isShowAlert = false"
+  />
   <div class="create-lesson">
     <div class="page-title">Создайте свой тест</div>
     <div class="row">
@@ -130,15 +136,26 @@ import { keysFromObject } from "../assets/js/TestHandlers/testHandlers";
 import { nextTick, onMounted } from "@vue/runtime-core";
 import { useAdmin } from "../use/admin";
 import { api_post_auth } from "../js/api_functions";
+import { useAlert } from "../use/alert";
+import appAlert from "../components/appAlert.vue";
 
 // При создание теста необходимо сбрасывать отображение select поля!
 // Ограничить создание пустого теста
 
 export default {
+  components: {
+    appAlert,
+  },
   setup() {
     const {
+      isShow: isShowAlert,
+      alertSuccess,
+      alertMessage,
+      showAlert,
+    } = useAlert();
+    const {
       getAdminMode,
-      createLesson: createLesson_admin,
+      // createLesson: createLesson_admin,
       isAdmin,
     } = useAdmin();
     const dictionary = ref({});
@@ -164,6 +181,7 @@ export default {
       delete dictionary.value[key];
     };
     const subscribeToListenEnter = () => {
+      // Исправить слушатели!!! Лучше прослушивать Enter в шаблоне и вызывать метод. См Документацию Vue
       inputs.value = document.querySelectorAll(".translate-input");
       inputs.value.forEach((el) => {
         el.removeEventListener("keydown", addToDictionary_onEnter);
@@ -202,6 +220,7 @@ export default {
         category: category.value,
         language: lang.value,
         words: dictionary.value,
+        isGeneral: false,
       };
     };
     const isCorrectLesson = (lesson) => {
@@ -225,26 +244,16 @@ export default {
         return;
       }
 
-      // Добавление в БД!
-      // Admin-mode \\
       if (isAdmin && getAdminMode()) {
-        // Переменная загрузки = true
-        const { response } = await createLesson_admin(lesson);
-        // Переменная загрузки = false
-        console.log(response);
-        // ~Admin-mode \\
-      } else {
-        // User-mode \\
-        const res = await api_post_auth(
-          "/api/create-user-lesson",
-          "POST",
-          lesson,
-          localStorage.getItem("token")
-        );
-        console.log(res);
-        // ~User-mode \\
+        lesson.isGeneral = true;
       }
-      // Доавление в БД конец!
+
+      const API_URL = "/api/test/create";
+      const res = await api_post_auth(API_URL, "POST", lesson);
+      // Настройка Alert окна
+      alertSuccess.value = res.success;
+      alertMessage.value = res.message;
+      showAlert();
 
       inputKey.value = "";
       testName.value = "";
@@ -265,6 +274,9 @@ export default {
       lang,
       testName,
       errorsInputs,
+      isShowAlert,
+      alertSuccess,
+      alertMessage,
       addField,
       addToDictionary,
       deleteKey,

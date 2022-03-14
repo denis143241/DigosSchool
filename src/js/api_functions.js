@@ -13,7 +13,12 @@ export const api_get = async (url) => {
   return await res.json();
 };
 
-export const api_post_auth = async (url, method = "POST", body, token) => {
+export const api_post_auth = async (
+  url,
+  method = "POST",
+  body,
+  token = localStorage.getItem("token")
+) => {
   const headers = {
     "content-type": "application/json",
     Authorization: `Bearer ${token}`,

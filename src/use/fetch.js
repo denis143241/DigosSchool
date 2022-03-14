@@ -1,11 +1,20 @@
 import { ref } from "vue";
 import { useToken } from "./token";
 
+/**
+ * 
+ * @param {String} url 
+ * @param {Object} options {headers, method, body: JSON.stringify()}
+ * @returns {any} response, isLoad, request, request_auth
+ */
 export function useFetch(url, options) {
   let response = ref();
   const isLoad = ref();
   let { token } = useToken();
 
+  /**
+   * Отправляет запрос без токена
+   */
   const request = async () => {
     isLoad.value = true;
     const res = await fetch(url, options);
@@ -13,6 +22,9 @@ export function useFetch(url, options) {
     isLoad.value = false;
   };
 
+  /**
+   * Отправляет запрос с токеном.
+   */
   const request_auth = async () => {
     isLoad.value = true;
     const res = await fetch(url, {
