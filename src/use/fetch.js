@@ -2,8 +2,8 @@ import { ref } from "vue";
 import { useToken } from "./token";
 
 /**
- * 
- * @param {String} url 
+ *
+ * @param {String} url
  * @param {Object} options {headers, method, body: JSON.stringify()}
  * @returns {any} response, isLoad, request, request_auth
  */

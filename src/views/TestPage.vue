@@ -72,6 +72,8 @@
 
 <script>
 // Переписан с использованием API
+// [] 1. addBookAndRedirectToBook Добавить проверку на кнопку в шаблоне - существует ли таковой тест. Переписать логику этой функции.
+
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -105,23 +107,6 @@ export default {
     let counter = ref(0);
 
     onMounted(async () => {
-      // Загрузка теста и его составляющих
-      // test.value = searchTestOnTitle(store.state.AllTests, route.params.title);
-
-      // const devidedTitle = route.params.title.split("_");
-      // if (devidedTitle.length > 1 && devidedTitle.includes("own")) {
-      //   // Ищем собственные тесты
-      //   const Url = `/api/own-test/${devidedTitle[1]}`;
-      //   const handledRes = await api_get_auth(
-      //     Url,
-      //     localStorage.getItem("token")
-      //   );
-      //   test.value = handledRes.test;
-      // } else {
-      //   // Ищем среди общих тестов
-      //   const Url = `/api/test/${route.params.title}`;
-      //   test.value = await api_get(Url);
-      // }
       const API_URL = `/api/test/${route.params.id}`;
       test.value = await api_get_auth(API_URL, localStorage.getItem("token"));
       console.log(test.value);

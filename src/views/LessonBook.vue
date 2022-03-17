@@ -2,13 +2,13 @@
   <div class="page-title">Учебник</div>
   <app-preloader v-if="isLoad" />
   <template v-else>
-    <div class="book">
+    <div v-if="data" class="book">
       <choose-test-card
-        v-for="lesson in lessons?.fromUser"
-        :key="lesson"
+        v-for="lesson in data.book"
+        :key="lesson._id"
         :test="lesson"
       >
-        <template #predicate-mine
+        <template v-if="!lesson.isGeneral" #predicate-mine
           ><p :style="{ paddingRight: '5px' }">(свой)</p></template
         >
         <template #action-button>
@@ -35,45 +35,7 @@
             <div class="col m2 s12 offset-m3">
               <button
                 @click.stop
-                @click="delFromOwnBook(lesson.title)"
-                class="button waves-effect waves-light btn red darken-3"
-              >
-                Удалить
-              </button>
-            </div>
-          </div>
-        </template>
-      </choose-test-card>
-      <choose-test-card
-        v-for="lesson in lessons?.fromGeneral"
-        :key="lesson"
-        :test="lesson"
-      >
-        <template #action-button>
-          <div class="row">
-            <div class="col m2 s12">
-              <button
-                @click.stop
-                @click="redirectToLearn(lesson)"
-                class="button waves-effect waves-dark btn"
-              >
-                Учить
-              </button>
-            </div>
-
-            <div class="col m2 s12">
-              <button
-                @click.stop
-                @click="redirectToTest(lesson)"
-                class="button waves-effect waves-dark btn"
-              >
-                Пройти тест
-              </button>
-            </div>
-            <div class="col m2 s12 offset-m3">
-              <button
-                @click.stop
-                @click="deleteFromGeneralBook(lesson.title)"
+                @click="deleteFromBook(lesson._id)"
                 class="button waves-effect waves-light btn red darken-3"
               >
                 Удалить
@@ -102,25 +64,20 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const {
-      data: lessons,
-      isLoad,
-      delFromOwnBook,
-      delFromBook: deleteFromGeneralBook,
-    } = useBook();
+    const { userBook: data, fetchBook, deleteFromBook } = useBook();
+
+    fetchBook(); // Загрузка тестов из книги
 
     const redirectToLearn = (lesson) => {
-      router.push(`${route.path}/${lesson.title}`);
+      router.push(`${route.path}/${lesson._id}`);
     };
     const redirectToTest = (test) => {
-      router.push(`/test/${test.title}`);
+      router.push(`/test/${test._id}`);
     };
 
     return {
-      lessons,
-      isLoad,
-      delFromOwnBook,
-      deleteFromGeneralBook,
+      data,
+      deleteFromBook,
       redirectToLearn,
       redirectToTest,
     };

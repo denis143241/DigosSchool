@@ -1,4 +1,10 @@
 <template>
+  <app-alert
+    v-if="isShowAlert"
+    :success="alertSuccess"
+    :message="alertMessage"
+    @close="isShowAlert = false"
+  />
   <app-preloader v-if="isLoadedTests" />
   <template v-else>
     <choose-test-card
@@ -9,9 +15,9 @@
     >
       <template #action-button>
         <button
-          v-if="!generalBook?.data.includes(test.title)"
+          v-if="!onlyIdInBook.includes(test._id)"
           @click.stop
-          @click="addToBook(test.title)"
+          @click="addToBook_wrapper(test._id)"
           class="button waves-effect waves-dark btn"
         >
           Добавить в учебник
@@ -25,25 +31,35 @@
 <script>
 import { useRoute, useRouter } from "vue-router";
 import { useFetch } from "../use/fetch";
-// import { useGeneralBook } from "../use/generalBook";
 import chooseTestCard from "../components/chooseTestCard.vue";
 import appPreloader from "../components/appPreloader.vue";
-import { ref } from "@vue/reactivity";
+import AppAlert from "../components/appAlert.vue";
+import { computed, ref } from "@vue/reactivity";
+import { useBook } from "../use/book";
+import { useAlert } from "../use/alert";
 export default {
   components: {
     chooseTestCard,
     appPreloader,
+    AppAlert,
   },
   setup() {
+    let {
+      alertSuccess,
+      alertMessage,
+      showAlert,
+      isShow: isShowAlert,
+    } = useAlert();
     const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
-    // const {
-    //   data: generalBook,
-    //   add: addToBook,
-    //   isLoad: isLoadedBook,
-    //   getGeneralBook,
-    // } = useGeneralBook();
+    const { userBook, fetchBook, addToBook } = useBook();
+    const onlyIdInBook = computed(() => {
+      if (!userBook.value) return [];
+      return userBook.value.book.map((obj) => obj._id);
+    });
+    fetchBook();
+
     const {
       response: data,
       request: fetchTests,
@@ -55,20 +71,29 @@ export default {
       router.push(`/test/${test._id}`);
     };
 
-    const reloadBook = () => {
+    const addToBook_wrapper = async (testId) => {
       loading.value = true;
-      // getGeneralBook();
+      const { response } = await addToBook(testId);
       loading.value = false;
+
+      // Настройка Alert окна
+      if (response.value.success === false) {
+        alertSuccess.value = response.value.success;
+        alertMessage.value = response.value.message;
+        showAlert();
+      }
     };
 
     return {
       data,
-      // generalBook,
       isLoadedTests,
-      // isLoadedBook,
+      userBook,
+      onlyIdInBook,
+      alertSuccess,
+      alertMessage,
+      isShowAlert,
       redirectToTest,
-      // addToBook,
-      reloadBook,
+      addToBook_wrapper,
     };
   },
 };
