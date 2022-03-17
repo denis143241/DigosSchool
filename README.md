@@ -1,4 +1,5 @@
 # client-app
+Client side for https://github.com/denis143241/online-school-backend
 
 ## Project setup
 ```
