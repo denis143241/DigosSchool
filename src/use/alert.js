@@ -7,10 +7,6 @@ export function useAlert(success, message) {
 
   const showAlert = () => {
     isShow.value = true;
-    // console.log(1);
-    // setTimeout(() => {
-    //   isShow.value = false;
-    // }, 1000);
   };
 
   return { isShow, alertSuccess, alertMessage, showAlert };

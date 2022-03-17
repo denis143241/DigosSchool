@@ -57,7 +57,7 @@ const routes = [
     component: () => import("../views/LessonBook.vue"),
   },
   {
-    path: "/lesson-book/:title",
+    path: "/lesson-book/:id",
     name: "Learning",
     meta: { layout: "main" },
     component: () => import("../views/LearningTest.vue"),

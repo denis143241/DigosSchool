@@ -1,8 +1,15 @@
 <template>
   <div class="lesson-page">
-    <div class="row">
+    <app-alert
+      v-if="lesson.data === false"
+      :success="alertSuccess"
+      :message="alertMessage"
+      :duration="1000 * 60"
+      @close="closeAlert"
+    />
+    <div v-else class="row">
       <div class="col l8 m10 s12 offset-l2 offset-m1">
-        <table class="striped">
+        <table class="striped" v-show="lesson.data !== null">
           <thead>
             <tr>
               <th>Слово</th>
@@ -12,7 +19,9 @@
           <tbody>
             <tr v-for="key in keys" :key="key">
               <td>{{ key }}</td>
-              <td class="answer">{{ lesson.words[key].join(" / ") }}</td>
+              <td class="answer">
+                {{ normalizeAnswer(lesson.data.words[key]) }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -22,26 +31,52 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { onMounted, computed, reactive } from "vue";
 import { useRoute } from "vue-router";
-import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
-import { useStore } from "vuex";
+import { useBook } from "../use/book";
 import { keysFromObject } from "../assets/js/TestHandlers/testHandlers";
+import AppAlert from "../components/appAlert.vue";
+import { useAlert } from "../use/alert";
 export default {
+  components: {
+    AppAlert,
+  },
   setup() {
-    const lesson = ref({});
+    let lesson = reactive({ data: null });
+    console.log(lesson);
     const route = useRoute();
-    const store = useStore();
-    const keys = ref([]);
-    onMounted(() => {
-      lesson.value = searchTestOnTitle(
-        store.state.AllTests,
-        route.params.title
-      );
-      keys.value = keysFromObject(lesson.value.words);
+    let { alertSuccess, alertMessage } = useAlert();
+    alertSuccess = false;
+    alertMessage =
+      "К сожалению в вашей учебной книге этого теста мы не нашли :(";
+    const { getTestFromBook } = useBook();
+
+    const keys = computed(() => {
+      return lesson.data !== null && lesson.data !== undefined
+        ? keysFromObject(lesson.data.words)
+        : [];
     });
 
-    return { lesson, keys };
+    onMounted(async () => {
+      lesson.data = await getTestFromBook(route.params.id);
+    });
+
+    const normalizeAnswer = (arr) => {
+      return arr.join(" / ");
+    };
+
+    const closeAlert = () => {
+      lesson.data = null;
+    };
+
+    return {
+      lesson,
+      keys,
+      alertSuccess,
+      alertMessage,
+      normalizeAnswer,
+      closeAlert,
+    };
   },
 };
 </script>

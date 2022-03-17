@@ -19,13 +19,18 @@ export default {
       type: String,
       required: true,
     },
+    duration: {
+      type: Number,
+      required: false,
+      default: 5000,
+    },
   },
   emits: ["close"],
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     onMounted(() => {
       setTimeout(() => {
         emit("close");
-      }, 5000);
+      }, props.duration);
     });
   },
 };
