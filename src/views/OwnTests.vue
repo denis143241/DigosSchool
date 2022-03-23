@@ -1,17 +1,18 @@
 <template>
-  <template v-if="isloaded">
+  <app-preloader v-if="isTestLoad || isBookLoad" />
+  <template v-else>
     <div class="cards">
       <choose-test-card
         @click="redirectToTest(test)"
         v-for="test in data"
-        :key="test"
+        :key="test._id"
         :test="test"
       >
         <template #action-button>
           <button
-            v-if="!ownBook.ownBook.includes(test.title)"
+            v-if="!onlyIdInBook.includes(test._id)"
             @click.stop
-            @click="addToBook(test.title)"
+            @click="addToBook(test._id)"
             class="button waves-effect waves-dark btn"
           >
             Добавить в учебник
@@ -21,16 +22,14 @@
       </choose-test-card>
     </div>
   </template>
-  <app-preloader v-else />
 </template>
 
 <script>
-import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { useOwnBook } from "../use/ownBook";
 import { useOwnTests } from "../use/ownTests";
 import chooseTestCard from "../components/chooseTestCard.vue";
 import appPreloader from "../components/appPreloader.vue";
+import { useBook } from "../use/book";
 
 export default {
   components: {
@@ -38,19 +37,22 @@ export default {
     appPreloader,
   },
   setup() {
-    const { data: ownBook, add: addToBook } = useOwnBook();
-    const { data } = useOwnTests();
+    const { data, isLoad: isTestLoad } = useOwnTests();
+    const { onlyIdInBook, addToBook, isBookLoad } = useBook();
     const router = useRouter();
-    const isloaded = computed(() => {
-      console.log(ownBook.value?.ownBook);
-      return ownBook.value?.ownBook;
-    });
 
     const redirectToTest = (test) => {
       router.push(`/test/own_${test.title}`);
     };
 
-    return { data, redirectToTest, addToBook, ownBook, isloaded };
+    return {
+      data,
+      isTestLoad,
+      isBookLoad,
+      onlyIdInBook,
+      redirectToTest,
+      addToBook,
+    };
   },
 };
 </script>

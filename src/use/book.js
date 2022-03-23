@@ -1,15 +1,24 @@
 import { useFetch } from "./fetch";
+import { computed } from "vue";
 
 export function useBook() {
-  const { response: userBook, request_auth: fetchBook } =
-    useFetch("/api/user/book");
+  // response = {value: {book: {...}}}
+  const {
+    response: userBook,
+    request_auth: fetchBook,
+    isLoad: isBookLoad,
+  } = useFetch("/api/user/book");
+
+  if (!userBook.value) {
+    fetchBook();
+  }
 
   const getTestFromBook = async (testId) => {
     const { response: test, request_auth: fetchTest } = useFetch(
       `/api/user/book/${testId}`
     );
 
-    await fetchTest(); // Асинхронный вызов!
+    await fetchTest();
 
     return test;
   };
@@ -55,5 +64,20 @@ export function useBook() {
     return { response, isLoad };
   };
 
-  return { userBook, fetchBook, getTestFromBook, addToBook, deleteFromBook };
+  const onlyIdInBook = computed(() => {
+    if (!userBook.value) {
+      return [];
+    }
+    return userBook.value.book.map((test) => test._id);
+  });
+
+  return {
+    userBook,
+    fetchBook,
+    onlyIdInBook,
+    isBookLoad,
+    getTestFromBook,
+    addToBook,
+    deleteFromBook,
+  };
 }

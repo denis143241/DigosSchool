@@ -34,7 +34,7 @@ import { useFetch } from "../use/fetch";
 import chooseTestCard from "../components/chooseTestCard.vue";
 import appPreloader from "../components/appPreloader.vue";
 import AppAlert from "../components/appAlert.vue";
-import { computed, ref } from "@vue/reactivity";
+import { ref } from "@vue/reactivity";
 import { useBook } from "../use/book";
 import { useAlert } from "../use/alert";
 export default {
@@ -53,12 +53,7 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
-    const { userBook, fetchBook, addToBook } = useBook();
-    const onlyIdInBook = computed(() => {
-      if (!userBook.value) return [];
-      return userBook.value.book.map((obj) => obj._id);
-    });
-    fetchBook();
+    const { userBook, onlyIdInBook, addToBook } = useBook();
 
     const {
       response: data,
