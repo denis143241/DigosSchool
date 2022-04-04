@@ -55,7 +55,7 @@
         </p>
         <div class="btns">
           <button
-            @click="addBookAndRedirectToBook($route.params.title)"
+            @click="addBookAndRedirectToBook($route.params.id)"
             class="button btn waves-effect waves-light grey darken-4"
           >
             В учебник
@@ -76,8 +76,7 @@
 
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useStore } from "vuex";
-
+import { useBook } from "../use/book";
 import { api_get_auth } from "../js/api_functions";
 // import { searchTestOnTitle } from "../assets/js/searchTestOnTitle";
 
@@ -95,7 +94,6 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const store = useStore();
     const test = ref({});
     const words = ref([]);
     const answer = ref("");
@@ -103,6 +101,7 @@ export default {
     const withError = ref(false);
     const showAnswer = ref(false);
     let isBgGreen = ref(null);
+    const { onlyIdInBook, addToBook } = useBook();
 
     let counter = ref(0);
 
@@ -175,14 +174,14 @@ export default {
       showAnswer.value = false;
       withError.value = false;
     };
-    const addBookAndRedirectToBook = (testName) => {
-      if (store.state.Book[testName] === undefined) {
-        store.commit("addToLearn", testName);
+    const addBookAndRedirectToBook = async (test_id) => {
+      if (!onlyIdInBook.value.includes(test_id)) {
+        await addToBook(test_id);
       }
-      redirectToBook(testName);
+      redirectToBook(test_id);
     };
-    const redirectToBook = (testName) => {
-      router.push(`/lesson-book/${testName}`);
+    const redirectToBook = (test_id) => {
+      router.push(`/lesson-book/${test_id}`);
     };
     const tryAgain = () => {
       counter.value = 0;

@@ -42,7 +42,7 @@ export default {
     const router = useRouter();
 
     const redirectToTest = (test) => {
-      router.push(`/test/own_${test.title}`);
+      router.push(`/test/${test._id}`);
     };
 
     return {

@@ -92,6 +92,28 @@
               </div>
               <router-link to="/own-tests"><p>Свои тесты</p></router-link>
             </li>
+
+            <li
+              v-if="isSignIn"
+              @click="logout_exit"
+              class="menu-option hide-on-large-only"
+            >
+              <div class="visible-if-choosen">
+                <span class="material-icons"> logout </span>
+              </div>
+              <p><a href="#">Выйти</a></p>
+            </li>
+
+            <li
+              v-else
+              @click="hideSidebar_notDesktop"
+              class="menu-option hide-on-large-only"
+            >
+              <div class="visible-if-choosen">
+                <span class="material-icons"> login </span>
+              </div>
+              <router-link to="/login"><p>Войти</p></router-link>
+            </li>
           </ul>
           <div class="addition-menu">
             <p><router-link to="/languages">Сменить язык</router-link></p>
@@ -117,6 +139,7 @@
 import { ref, onMounted, computed } from "vue";
 import appNavigation from "../components/appNavigation.vue";
 import appPopup from "../components/appPopup.vue";
+import { useRouter } from "vue-router";
 export default {
   components: {
     appNavigation,
@@ -126,6 +149,7 @@ export default {
     const isSidebar = ref(true);
     const isDesktop = computed(() => document.body.clientWidth > 1200);
     const popup = ref(false);
+    const router = useRouter();
     const rating = ref([
       require("../assets/empty-star.png"),
       require("../assets/empty-star.png"),
@@ -162,16 +186,25 @@ export default {
     const confirm = () => {
       closePopup();
     };
-
+    const isSignIn = computed(() => {
+      return localStorage.getItem("token") || false;
+    });
+    const logout_exit = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push("/login");
+    };
     return {
       isSidebar,
       popup,
       rating,
+      isSignIn,
       rate,
       hideSidebar_notDesktop,
       openPopup,
       closePopup,
       confirm,
+      logout_exit,
     };
   },
 };
