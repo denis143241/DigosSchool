@@ -27,99 +27,74 @@
     <app-navigation @listenerMenu="isSidebar = !isSidebar" />
     <div class="row content-place">
       <div v-if="isSidebar" class="col l2 s12 slidenav-place">
+        <!-- Sidebar -->
         <div class="sidebar white-text">
           <ul>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/' }"
-              >
-                <span class="material-icons"> home </span>
-              </div>
-              <router-link to="/"><p>Главная</p></router-link>
-            </li>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/category' }"
-              >
-                <span class="material-icons"> category </span>
-              </div>
-              <router-link to="/category"><p>Категории</p></router-link>
-            </li>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/resent' }"
-              >
-                <span class="material-icons"> restore </span>
-              </div>
-              <router-link to="/resent"><p>Пройденные</p></router-link>
-            </li>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/create-lesson' }"
-              >
-                <span class="material-icons"> create </span>
-              </div>
-              <router-link to="/create-lesson"><p>Создать тест</p></router-link>
-            </li>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/lesson-book' }"
-              >
-                <span class="material-icons"> menu_book </span>
-              </div>
-              <router-link to="/lesson-book"><p>Учебник</p></router-link>
-            </li>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/chedule' }"
-              >
-                <span class="material-icons"> today </span>
-              </div>
-              <router-link to="/chedule"><p>Построить план</p></router-link>
-            </li>
-            <li @click="hideSidebar_notDesktop" class="menu-option">
-              <div
-                class="visible-if-choosen"
-                :class="{ 'active-tab': $route.path === '/own-tests' }"
-              >
-                <span class="material-icons"> account_circle </span>
-              </div>
-              <router-link to="/own-tests"><p>Свои тесты</p></router-link>
-            </li>
+            <sidebar-tab
+              :comparedPath="'/'"
+              :googleIcon="'home'"
+              :tabName="'Главная'"
+              @chose="hideSidebar_notDesktop"
+            />
+            <sidebar-tab
+              :comparedPath="'/category'"
+              :googleIcon="'category'"
+              :tabName="'Категории'"
+              @chose="hideSidebar_notDesktop"
+            />
+            <sidebar-tab
+              :comparedPath="'/resent'"
+              :googleIcon="'restore'"
+              :tabName="'Пройденные'"
+              @chose="hideSidebar_notDesktop"
+            />
+            <sidebar-tab
+              :comparedPath="'/create-lesson'"
+              :googleIcon="'create'"
+              :tabName="'Создать тест'"
+              @chose="hideSidebar_notDesktop"
+            />
+            <sidebar-tab
+              :comparedPath="'/lesson-book'"
+              :googleIcon="'menu_book'"
+              :tabName="'Учебник'"
+              @chose="hideSidebar_notDesktop"
+            />
+            <sidebar-tab
+              :comparedPath="'/chedule'"
+              :googleIcon="'today'"
+              :tabName="'Построить план'"
+              @chose="hideSidebar_notDesktop"
+            />
+            <sidebar-tab
+              :comparedPath="'/own-tests'"
+              :googleIcon="'account_circle'"
+              :tabName="'Свои тесты'"
+              @chose="hideSidebar_notDesktop"
+            />
 
-            <li
+            <sidebar-tab
               v-if="isSignIn"
-              @click="logout_exit"
-              class="menu-option hide-on-large-only"
-            >
-              <div class="visible-if-choosen">
-                <span class="material-icons"> logout </span>
-              </div>
-              <p><a href="#">Выйти</a></p>
-            </li>
-
-            <li
+              :googleIcon="'logout'"
+              :tabName="'Выйти'"
+              :additionClasses="{ 'hide-on-large-only': true }"
+              @chose="logout_exit"
+            />
+            <sidebar-tab
               v-else
-              @click="hideSidebar_notDesktop"
-              class="menu-option hide-on-large-only"
-            >
-              <div class="visible-if-choosen">
-                <span class="material-icons"> login </span>
-              </div>
-              <router-link to="/login"><p>Войти</p></router-link>
-            </li>
+              :comparedPath="'/login'"
+              :googleIcon="'login'"
+              :tabName="'Войти'"
+              :additionClasses="{ 'hide-on-large-only': true }"
+              @chose="hideSidebar_notDesktop"
+            />
           </ul>
           <div class="addition-menu">
             <p><router-link to="/languages">Сменить язык</router-link></p>
             <p @click="openPopup">Оцените нас</p>
           </div>
         </div>
+        <!-- End Sidebar -->
       </div>
       <!-- :style тут стоит переписать навсегда в статичные св-ва! -->
       <div
@@ -127,9 +102,11 @@
         :class="{ l10: isSidebar }"
         :style="{ 'overflow-y': 'scroll' }"
       >
+        <!-- Main Content -->
         <section id="section">
           <router-view />
         </section>
+        <!-- End Main Content -->
       </div>
     </div>
   </div>
@@ -137,13 +114,16 @@
 
 <script>
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 import appNavigation from "../components/appNavigation.vue";
 import appPopup from "../components/appPopup.vue";
-import { useRouter } from "vue-router";
+import sidebarTab from "../components/sidebarTab.vue";
+
 export default {
   components: {
     appNavigation,
     appPopup,
+    sidebarTab,
   },
   setup() {
     const isSidebar = ref(true);
@@ -157,6 +137,7 @@ export default {
       require("../assets/empty-star.png"),
       require("../assets/empty-star.png"),
     ]);
+
     onMounted(() => {
       if (!isDesktop.value) {
         isSidebar.value = false;
@@ -249,41 +230,8 @@ form {
     }
   }
 }
-.visible-if-choosen {
-  min-width: 60px;
-  height: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  border-radius: 0 10px 10px 0;
-  padding: 5px 10px 5px 0;
-}
-
-.active-tab {
-  background-color: @choosen-menu-options-color;
-}
-li {
-  margin: 20px 0;
-  &:hover {
-    background-color: @choosen-menu-options-color;
-    border-radius: 0 30px 30px 0;
-  }
-}
 ul {
   margin: 40px 20px 0 0;
-}
-p {
-  margin: 0 0 0 10px;
-  padding: 0;
-  line-height: 24px;
-}
-.menu-option {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  & a {
-    color: @nav-color;
-  }
 }
 .slidenav-place {
   padding: 0 !important;
