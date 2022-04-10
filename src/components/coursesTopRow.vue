@@ -1,8 +1,11 @@
 <template>
   <div class="top-row">
-    <button class="button btn waves-effect waves-ligth top-row__item">
+    <router-link
+      to="create-course"
+      class="button btn waves-effect waves-ligth top-row__item"
+    >
       Создать курс
-    </button>
+    </router-link>
     <div class="search-area top-row__item">
       <slot name="search" />
     </div>

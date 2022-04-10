@@ -86,6 +86,12 @@ const routes = [
     meta: { layout: "main" },
     component: () => import("../views/Courses.vue"),
   },
+  {
+    path: "/create-course",
+    name: "CourseCreate",
+    meta: { layout: "main" },
+    component: () => import("../views/CourseCreate.vue"),
+  },
 ];
 
 const router = createRouter({
