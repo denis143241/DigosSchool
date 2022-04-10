@@ -2,9 +2,18 @@
   <div class="course-page">
     <app-preloader v-if="isLoading" />
     <main v-else>
-      <courses-top-row />
+      <courses-top-row>
+        <template v-slot:search>
+          <input
+            v-model="searchingValue"
+            type="text"
+            class="search-bar"
+            placeholder="Поиск по курсам"
+          />
+        </template>
+      </courses-top-row>
       <course-card
-        v-for="course in courses"
+        v-for="course in searchedCourses"
         :key="course._id"
         :course="course"
       />
@@ -17,7 +26,7 @@ import { useCourses } from "../use/courses";
 import CoursesTopRow from "../components/coursesTopRow.vue";
 import CourseCard from "../components/courseCard.vue";
 import AppPreloader from "../components/appPreloader.vue";
-import { computed } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 
 export default {
   components: {
@@ -27,10 +36,23 @@ export default {
   },
   setup() {
     const { response: courses } = useCourses();
+    const searchingValue = ref("");
+
     const isLoading = computed(() => {
       return !courses.value;
     });
-    return { courses, isLoading };
+
+    const searchedCourses = computed(() => {
+      if (!searchingValue.value) {
+        return courses.value;
+      }
+
+      return courses.value.filter((c) =>
+        c.name.toLowerCase().includes(searchingValue.value.toLowerCase())
+      );
+    });
+
+    return { courses, isLoading, searchingValue, searchedCourses };
   },
 };
 </script>

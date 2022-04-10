@@ -4,7 +4,7 @@
       Создать курс
     </button>
     <div class="search-area top-row__item">
-      <input type="text" class="search-bar" placeholder="Поиск по курсам" />
+      <slot name="search" />
     </div>
   </div>
 </template>
