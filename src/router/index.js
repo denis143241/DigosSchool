@@ -80,6 +80,12 @@ const routes = [
     meta: { layout: "main" },
     component: () => import("../views/Languages.vue"),
   },
+  {
+    path: "/courses",
+    name: "Courses",
+    meta: { layout: "main" },
+    component: () => import("../views/Courses.vue"),
+  },
 ];
 
 const router = createRouter({

@@ -60,10 +60,16 @@
               :tabName="'Учебник'"
               @chose="hideSidebar_notDesktop"
             />
-            <sidebar-tab
+            <!-- <sidebar-tab
               :comparedPath="'/chedule'"
               :googleIcon="'today'"
               :tabName="'Построить план'"
+              @chose="hideSidebar_notDesktop"
+            /> -->
+            <sidebar-tab
+              :comparedPath="'courses'"
+              :tabName="'Курсы'"
+              :googleIcon="'group_work'"
               @chose="hideSidebar_notDesktop"
             />
             <sidebar-tab
