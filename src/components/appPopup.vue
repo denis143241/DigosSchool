@@ -1,17 +1,19 @@
 <template>
-  <div @click="$emit('closePopup')" class="popup-wrapper">
+  <div v-if="isOpen" @click="close" class="popup-wrapper">
     <div @click.stop class="popup">
       <slot name="popup-header" />
       <slot name="popup-content" />
       <div class="actions">
         <button
-          @click="$emit('confirm')"
+          @click="confirm"
+          id="btn_success"
           class="btn waves-effect waves-light confirm"
         >
           Отправить
         </button>
         <button
-          @click="$emit('closePopup')"
+          @click="close"
+          id="btn-reject"
           class="btn waves-effect waves-light red darken-4 close"
         >
           Закрыть
@@ -22,13 +24,38 @@
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
 export default {
-  props: {
-    title: {
-      type: String,
-    },
+  setup() {
+    let currentPopupController = null;
+    const isOpen = ref(false);
+    const open = () => {
+      let resolve;
+      let reject;
+
+      const popupPromise = new Promise((ok, fail) => {
+        resolve = ok;
+        reject = fail;
+      });
+
+      isOpen.value = true;
+      currentPopupController = { resolve, reject };
+
+      return popupPromise;
+    };
+
+    const confirm = () => {
+      currentPopupController.resolve(true);
+      isOpen.value = false;
+    };
+
+    const close = () => {
+      currentPopupController.resolve(false);
+      isOpen.value = false;
+    };
+
+    return { isOpen, open, close, confirm };
   },
-  emits: ["closePopup", "confirm"],
 };
 </script>
 

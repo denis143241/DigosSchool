@@ -1,5 +1,5 @@
 <template>
-  <app-popup @closePopup="closePopup" @confirm="confirm" v-if="popup">
+  <app-popup ref="rate_popup">
     <template #popup-header>
       <div class="popup-title">Оцените нас</div>
     </template>
@@ -95,7 +95,7 @@
           </ul>
           <div class="addition-menu">
             <p><router-link to="/languages">Сменить язык</router-link></p>
-            <p @click="openPopup">Оцените нас</p>
+            <p @click="openRatePopup">Оцените нас</p>
           </div>
         </div>
         <!-- End Sidebar -->
@@ -130,9 +130,9 @@ export default {
     sidebarTab,
   },
   setup() {
+    const rate_popup = ref(null);
     const isSidebar = ref(true);
     const isDesktop = computed(() => document.body.clientWidth > 1200);
-    const popup = ref(false);
     const router = useRouter();
     const rating = ref([
       require("../assets/empty-star.png"),
@@ -162,15 +162,15 @@ export default {
       }
       console.log(rating.value);
     };
-    const openPopup = () => {
-      popup.value = true;
+
+    const openRatePopup = async () => {
+      const res = await rate_popup.value.open();
+
+      if (res) {
+        alert("Good");
+      }
     };
-    const closePopup = () => {
-      popup.value = false;
-    };
-    const confirm = () => {
-      closePopup();
-    };
+
     const isSignIn = computed(() => {
       return localStorage.getItem("token") || false;
     });
@@ -179,16 +179,15 @@ export default {
       localStorage.removeItem("user");
       router.push("/login");
     };
+
     return {
       isSidebar,
-      popup,
       rating,
       isSignIn,
       rate,
+      rate_popup,
+      openRatePopup,
       hideSidebar_notDesktop,
-      openPopup,
-      closePopup,
-      confirm,
       logout_exit,
     };
   },
