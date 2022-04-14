@@ -1,6 +1,6 @@
 <template>
   <div v-if="isOpen" @click="close" class="popup-wrapper">
-    <div @click.stop class="popup">
+    <div @click.stop class="popup" :style="{ width: `${normalizedSize}px` }">
       <slot name="popup-header" />
       <slot name="popup-content" />
       <div class="actions">
@@ -24,9 +24,15 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 export default {
-  setup() {
+  props: {
+    windowSize: {
+      type: String,
+      default: "small",
+    },
+  },
+  setup(props) {
     let currentPopupController = null;
     const isOpen = ref(false);
     const open = () => {
@@ -44,6 +50,17 @@ export default {
       return popupPromise;
     };
 
+    const normalizedSize = computed(() => {
+      switch (props.windowSize) {
+        case "small":
+          return 500;
+        case "medium":
+          return 650;
+        case "large":
+          return 800;
+      }
+    });
+
     const confirm = () => {
       currentPopupController.resolve(true);
       isOpen.value = false;
@@ -54,7 +71,7 @@ export default {
       isOpen.value = false;
     };
 
-    return { isOpen, open, close, confirm };
+    return { isOpen, normalizedSize, open, close, confirm };
   },
 };
 </script>
@@ -76,7 +93,6 @@ export default {
   flex-direction: column;
   padding: 10px 15px;
   background-color: #fff;
-  width: 500px;
   border-radius: 10px;
   top: 50%;
   left: 50%;
