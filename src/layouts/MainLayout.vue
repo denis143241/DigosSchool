@@ -1,10 +1,8 @@
 <template>
-  <app-popup
-    @closePopup="closePopup"
-    @confirm="confirm"
-    :title="'Оцените нас'"
-    v-if="popup"
-  >
+  <app-popup @closePopup="closePopup" @confirm="confirm" v-if="popup">
+    <template #popup-header>
+      <div class="popup-title">Оцените нас</div>
+    </template>
     <template #popup-content>
       <form>
         <div class="rating">

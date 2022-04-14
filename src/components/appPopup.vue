@@ -1,7 +1,7 @@
 <template>
   <div @click="$emit('closePopup')" class="popup-wrapper">
     <div @click.stop class="popup">
-      <div class="title">{{ title }}</div>
+      <slot name="popup-header" />
       <slot name="popup-content" />
       <div class="actions">
         <button
@@ -54,12 +54,6 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-.title {
-  font-family: @main-font;
-  font-size: 30px;
-  font-weight: 700;
-  margin: 10px 0 20px;
 }
 .confirm,
 .close {
