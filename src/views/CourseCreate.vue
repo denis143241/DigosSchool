@@ -1,5 +1,4 @@
 <template>
-  {{ ownTests }}
   <app-popup ref="add_test_popup" :windowSize="'large'">
     <template #popup-header>
       <div class="popup-title">Выберите тесты</div>
@@ -11,6 +10,9 @@
         :title="item.title"
         :category="item.category"
         :language="item.language"
+        :id="item._id"
+        :isChecked="chosenTests.includes(item._id)"
+        @update:id="chosenTestsHandler"
       />
     </template>
   </app-popup>
@@ -26,7 +28,7 @@
           <div class="row">
             <div class="col m6 s12 half-row-block">
               <div class="page-subtitle">Добавьте тесты в курс</div>
-              <table class="the-table striped">
+              <table v-if="chosenTests.length > 0" class="the-table striped">
                 <thead>
                   <tr>
                     <th>Название</th>
@@ -34,11 +36,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="test in testsInCourse" :key="test._id">
+                  <tr v-for="test in chosenTests_detail" :key="test._id">
                     <td>{{ test.title }}</td>
                     <td>
                       <span
-                        @click="deleteTest(test._id)"
+                        @click="removeTest(test._id)"
                         class="material-icons delete-icon"
                       >
                         close
@@ -63,7 +65,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import AppPopup from "../components/appPopup.vue";
 import ListCheckboxItem from "../components/listCheckboxItem.vue";
 import { useOwnTests } from "../use/ownTests";
@@ -73,30 +75,50 @@ export default {
     ListCheckboxItem,
   },
   setup() {
-    const testsInCourse = ref([{ title: "some", _id: 1 }]);
     const add_test_popup = ref(null);
+    const chosenTests = ref([]);
+    let chosenTests_temp = [];
     const { data: ownTests } = useOwnTests();
 
+    const chosenTests_detail = computed(() => {
+      return ownTests.value?.filter((t) => chosenTests.value.includes(t._id));
+    });
+
     const addTest = async () => {
+      chosenTests_temp = [...chosenTests.value];
       const res = await add_test_popup.value.open();
 
-      console.log(res);
+      if (res) {
+        chosenTests.value = [...chosenTests_temp];
+        return;
+      }
+
+      chosenTests_temp = [];
     };
 
-    const normalizedLabelData = (object) => {
-      return Object.entries(object)
-        .filter(
-          ([key]) => key === "title" || key === "category" || key === "language"
-        )
-        .map(([, value]) => value);
+    const chosenTestsHandler = (event) => {
+      if (event.target.checked) {
+        chosenTests_temp.push(event.target.value);
+        return;
+      }
+
+      chosenTests_temp = chosenTests_temp.filter(
+        (v) => v !== event.target.value
+      );
+    };
+
+    const removeTest = (test_id) => {
+      chosenTests.value = chosenTests.value.filter((id) => id !== test_id);
     };
 
     return {
-      testsInCourse,
+      chosenTests_detail,
       add_test_popup,
       ownTests,
       addTest,
-      normalizedLabelData,
+      chosenTests,
+      chosenTestsHandler,
+      removeTest,
     };
   },
 };

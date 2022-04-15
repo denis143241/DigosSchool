@@ -1,7 +1,12 @@
 <template>
   <p class="checkbox-row">
     <label>
-      <input type="checkbox" />
+      <input
+        :value="id"
+        @input="$emit('update:id', $event)"
+        type="checkbox"
+        :checked="isChecked"
+      />
       <span style="width: 100%">
         <div class="checkbox-info row">
           <div class="col m4">{{ title }}</div>
@@ -25,7 +30,14 @@ export default {
     language: {
       type: String,
     },
+    id: {
+      type: String,
+    },
+    isChecked: {
+      type: Boolean,
+    },
   },
+  emits: ["update:id"],
 };
 </script>
 
