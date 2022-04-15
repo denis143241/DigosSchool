@@ -28,27 +28,24 @@
           <div class="row">
             <div class="col m6 s12 half-row-block">
               <div class="page-subtitle">Добавьте тесты в курс</div>
-              <table v-if="chosenTests.length > 0" class="the-table striped">
-                <thead>
-                  <tr>
-                    <th>Название</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="test in chosenTests_detail" :key="test._id">
-                    <td>{{ test.title }}</td>
-                    <td>
-                      <span
-                        @click="removeTest(test._id)"
-                        class="material-icons delete-icon"
-                      >
-                        close
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+              <app-table v-if="chosenTests.length > 0">
+                <template #header>
+                  <th>Название</th>
+                </template>
+                <template #content>
+                  <app-table-row
+                    v-for="test in chosenTests_detail"
+                    :key="test._id"
+                    @removeItem="removeTest(test._id)"
+                  >
+                    <template #tableRow>
+                      <td>{{ test.title }}</td>
+                    </template>
+                  </app-table-row>
+                </template>
+              </app-table>
+
               <div @click="addTest" class="button btn waves-effect waves-light">
                 Добавить
               </div>
@@ -68,11 +65,15 @@
 import { computed, ref } from "@vue/reactivity";
 import AppPopup from "../components/appPopup.vue";
 import ListCheckboxItem from "../components/listCheckboxItem.vue";
+import AppTable from "../components/appTable.vue";
+import AppTableRow from "../components/appTableRow.vue";
 import { useOwnTests } from "../use/ownTests";
 export default {
   components: {
     AppPopup,
     ListCheckboxItem,
+    AppTable,
+    AppTableRow,
   },
   setup() {
     const add_test_popup = ref(null);
