@@ -1,4 +1,19 @@
 <template>
+  {{ ownTests }}
+  <app-popup ref="add_test_popup" :windowSize="'large'">
+    <template #popup-header>
+      <div class="popup-title">Выберите тесты</div>
+    </template>
+    <template #popup-content>
+      <list-checkbox-item
+        v-for="item in ownTests"
+        :key="item._id"
+        :title="item.title"
+        :category="item.category"
+        :language="item.language"
+      />
+    </template>
+  </app-popup>
   <div class="page create-course_page">
     <div class="page-title">Создайте свой курс</div>
     <div class="page-content">
@@ -49,13 +64,40 @@
 
 <script>
 import { ref } from "@vue/reactivity";
+import AppPopup from "../components/appPopup.vue";
+import ListCheckboxItem from "../components/listCheckboxItem.vue";
+import { useOwnTests } from "../use/ownTests";
 export default {
+  components: {
+    AppPopup,
+    ListCheckboxItem,
+  },
   setup() {
     const testsInCourse = ref([{ title: "some", _id: 1 }]);
+    const add_test_popup = ref(null);
+    const { data: ownTests } = useOwnTests();
 
-    const addTest = () => {};
+    const addTest = async () => {
+      const res = await add_test_popup.value.open();
 
-    return { testsInCourse, addTest };
+      console.log(res);
+    };
+
+    const normalizedLabelData = (object) => {
+      return Object.entries(object)
+        .filter(
+          ([key]) => key === "title" || key === "category" || key === "language"
+        )
+        .map(([, value]) => value);
+    };
+
+    return {
+      testsInCourse,
+      add_test_popup,
+      ownTests,
+      addTest,
+      normalizedLabelData,
+    };
   },
 };
 </script>

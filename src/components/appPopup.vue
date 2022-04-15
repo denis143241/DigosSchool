@@ -25,6 +25,7 @@
 
 <script>
 import { computed, ref } from "@vue/reactivity";
+import { onMounted, onUnmounted } from "@vue/runtime-core";
 export default {
   props: {
     windowSize: {
@@ -71,6 +72,20 @@ export default {
       isOpen.value = false;
     };
 
+    const handleKeydown = (e) => {
+      if (isOpen.value && e.key === "Escape") {
+        close();
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("keydown", handleKeydown);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keydown", handleKeydown);
+    });
+
     return { isOpen, normalizedSize, open, close, confirm };
   },
 };
@@ -79,8 +94,10 @@ export default {
 <style lang="less" scoped>
 @import url("../assets/css/mainStyles.less");
 .popup-wrapper {
-  z-index: 1;
-  position: fixed;
+  z-index: 9999;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.75);
@@ -102,9 +119,9 @@ export default {
 .close {
   margin: 10px;
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
   .popup {
-    width: 300px;
+    width: 100vw !important;
   }
 }
 </style>
