@@ -16,6 +16,26 @@
       />
     </template>
   </app-popup>
+  <app-popup ref="add_students_popup" :windowSize="'large'">
+    <template #popup-header>
+      <div class="popup-title">Поиск участников</div>
+    </template>
+    <template #popup-content>
+      <app-input
+        @update:modelValue="updateStudentSearch"
+        :modelValue="searchStudent"
+        :styles="{ width: '80%' }"
+        :autocomplete="'off'"
+        >Поиск</app-input
+      >
+      <select-list-item
+        v-for="suggest in suggestedStudents"
+        :key="suggest._id"
+        :styles="{ width: '80%' }"
+        >{{ suggest.username }}</select-list-item
+      >
+    </template>
+  </app-popup>
   <div class="page create-course_page">
     <div class="page-title">Создайте свой курс</div>
     <div class="page-content">
@@ -52,7 +72,12 @@
             </div>
             <div class="col m6 s12 half-row-block">
               <div class="page-subtitle">Пригласите участников</div>
-              <div class="button btn waves-effect waves-light">Пригласить</div>
+              <div
+                @click="addStudents"
+                class="button btn waves-effect waves-light"
+              >
+                Пригласить
+              </div>
             </div>
           </div>
         </div>
@@ -65,21 +90,31 @@
 import { computed, ref } from "@vue/reactivity";
 import AppPopup from "../components/appPopup.vue";
 import ListCheckboxItem from "../components/listCheckboxItem.vue";
+import SelectListItem from "../components/selectListItem.vue";
 import AppTable from "../components/appTable.vue";
 import AppTableRow from "../components/appTableRow.vue";
+import AppInput from "../components/appInput.vue";
 import { useOwnTests } from "../use/ownTests";
+import { watchEffect } from "vue";
+import { useFetch } from "../use/fetch";
 export default {
   components: {
     AppPopup,
     ListCheckboxItem,
+    SelectListItem,
     AppTable,
     AppTableRow,
+    AppInput,
   },
   setup() {
+    const SUGGEST_AMOUNT = 7;
     const add_test_popup = ref(null);
+    const add_students_popup = ref(null);
     const chosenTests = ref([]);
+    const searchStudent = ref("");
     let chosenTests_temp = [];
     const { data: ownTests } = useOwnTests();
+    let suggestedStudents = ref();
 
     const chosenTests_detail = computed(() => {
       return ownTests.value?.filter((t) => chosenTests.value.includes(t._id));
@@ -97,6 +132,15 @@ export default {
       chosenTests_temp = [];
     };
 
+    const addStudents = async () => {
+      const res = await add_students_popup.value.open();
+      searchStudent.value = "";
+      suggestedStudents.value = [];
+      if (res) {
+        1;
+      }
+    };
+
     const chosenTestsHandler = (event) => {
       if (event.target.checked) {
         chosenTests_temp.push(event.target.value);
@@ -108,15 +152,35 @@ export default {
       );
     };
 
+    const updateStudentSearch = (newValue) => {
+      searchStudent.value = newValue;
+    };
+
     const removeTest = (test_id) => {
       chosenTests.value = chosenTests.value.filter((id) => id !== test_id);
     };
 
+    const suggestStudents = async (searchValue) => {
+      if (searchValue === "") suggestedStudents.value = [];
+      const { response, request: getStudents } = useFetch(
+        `api/user/uesrs-by-username/${searchValue}/${SUGGEST_AMOUNT}`
+      );
+      await getStudents();
+      suggestedStudents.value = response.value;
+    };
+
+    watchEffect(() => suggestStudents(searchStudent.value));
+
     return {
       chosenTests_detail,
       add_test_popup,
+      add_students_popup,
       ownTests,
+      searchStudent,
+      suggestedStudents,
+      updateStudentSearch,
       addTest,
+      addStudents,
       chosenTests,
       chosenTestsHandler,
       removeTest,
