@@ -1,5 +1,5 @@
 <template>
-  <div class="select-wrapper" :style="styles">
+  <div class="select-wrapper" :style="styles" :class="{ selected }">
     <span class="option">
       <slot></slot>
     </span>
@@ -11,6 +11,9 @@ export default {
   props: {
     styles: {
       type: Object,
+    },
+    selected: {
+      type: Boolean,
     },
   },
 };
@@ -25,5 +28,8 @@ export default {
     background-color: #e5e8e8;
     cursor: pointer;
   }
+}
+.selected {
+  background-color: #e5e8e8;
 }
 </style>

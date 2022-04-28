@@ -33,7 +33,8 @@ export default {
       default: "small",
     },
   },
-  setup(props) {
+  emits: ["down", "up", "enter"],
+  setup(props, { emit }) {
     let currentPopupController = null;
     const isOpen = ref(false);
     const open = () => {
@@ -73,8 +74,23 @@ export default {
     };
 
     const handleKeydown = (e) => {
-      if (isOpen.value && e.key === "Escape") {
-        close();
+      console.log(e.key);
+      switch (e.key) {
+        case "Escape":
+          close();
+          break;
+
+        case "ArrowDown":
+          emit("down");
+          break;
+
+        case "ArrowUp":
+          emit("up");
+          break;
+
+        case "Enter":
+          emit("enter");
+          break;
       }
     };
 

@@ -16,7 +16,13 @@
       />
     </template>
   </app-popup>
-  <app-popup ref="add_students_popup" :windowSize="'large'">
+  <app-popup
+    ref="add_students_popup"
+    :windowSize="'large'"
+    @down="studentTools.cursorDown"
+    @up="studentTools.cursorUp"
+    @enter="studentTools.chooseElement"
+  >
     <template #popup-header>
       <div class="popup-title">Поиск участников</div>
     </template>
@@ -29,9 +35,10 @@
         >Поиск</app-input
       >
       <select-list-item
-        v-for="suggest in suggestedStudents"
+        v-for="(suggest, index) in studentTools.contentList.value"
         :key="suggest._id"
         :styles="{ width: '80%' }"
+        :selected="index === studentTools.listCursor.value"
         >{{ suggest.username }}</select-list-item
       >
     </template>
@@ -97,6 +104,7 @@ import AppInput from "../components/appInput.vue";
 import { useOwnTests } from "../use/ownTests";
 import { watchEffect } from "vue";
 import { useFetch } from "../use/fetch";
+import { usePopupTools } from "../use/popupTools";
 export default {
   components: {
     AppPopup,
@@ -114,7 +122,9 @@ export default {
     const searchStudent = ref("");
     let chosenTests_temp = [];
     const { data: ownTests } = useOwnTests();
-    let suggestedStudents = ref();
+    // let suggestedStudents = ref();
+    const studentTools = usePopupTools();
+    console.log(studentTools);
 
     const chosenTests_detail = computed(() => {
       return ownTests.value?.filter((t) => chosenTests.value.includes(t._id));
@@ -135,7 +145,7 @@ export default {
     const addStudents = async () => {
       const res = await add_students_popup.value.open();
       searchStudent.value = "";
-      suggestedStudents.value = [];
+      studentTools.contentList.value = [];
       if (res) {
         1;
       }
@@ -161,13 +171,32 @@ export default {
     };
 
     const suggestStudents = async (searchValue) => {
-      if (searchValue === "") suggestedStudents.value = [];
+      studentTools.listCursor.value = null;
+
+      if (searchValue === "") studentTools.contentList.value = [];
+
       const { response, request: getStudents } = useFetch(
         `api/user/uesrs-by-username/${searchValue}/${SUGGEST_AMOUNT}`
       );
       await getStudents();
-      suggestedStudents.value = response.value;
+      studentTools.contentList.value = response.value;
     };
+
+    // const studentCursorDown = () => {
+    //   studentsCursor.value !== studentsList.value.length - 1
+    //     ? (studentsCursor.value += 1)
+    //     : (studentsCursor.value = 0);
+    // };
+
+    // const studentCursorUp = () => {
+    //   studentsCursor.value > 0
+    //     ? (studentsCursor.value -= 1)
+    //     : (studentsCursor.value = studentsList.value.length - 1);
+    // };
+
+    // const chooseStudent = () => {
+    //   console.log(studen)
+    // }
 
     watchEffect(() => suggestStudents(searchStudent.value));
 
@@ -177,7 +206,7 @@ export default {
       add_students_popup,
       ownTests,
       searchStudent,
-      suggestedStudents,
+      studentTools,
       updateStudentSearch,
       addTest,
       addStudents,
