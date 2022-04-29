@@ -21,12 +21,23 @@
     :windowSize="'large'"
     @down="studentTools.cursorDown"
     @up="studentTools.cursorUp"
-    @enter="studentTools.chooseElement"
+    @enter="studentTools.chooseElement(studentTools.addToChosenList)"
   >
     <template #popup-header>
       <div class="popup-title">Поиск участников</div>
     </template>
     <template #popup-content>
+      <selected-list
+        v-if="studentTools.choosenStudents.length > 0"
+        :styles="{ width: '80%' }"
+      >
+        <selected-list-item
+          @removeItem="studentTools.removeFromStudentList(student)"
+          v-for="student in studentTools.choosenStudents"
+          :key="student._id"
+          >{{ student.username }}</selected-list-item
+        >
+      </selected-list>
       <app-input
         @update:modelValue="updateStudentSearch"
         :modelValue="searchStudent"
@@ -35,10 +46,11 @@
         >Поиск</app-input
       >
       <select-list-item
-        v-for="(suggest, index) in studentTools.contentList.value"
+        v-for="(suggest, index) in studentTools.contentList"
         :key="suggest._id"
         :styles="{ width: '80%' }"
-        :selected="index === studentTools.listCursor.value"
+        :selected="index === studentTools.listCursor"
+        @click="studentTools.addToChosenList(suggest)"
         >{{ suggest.username }}</select-list-item
       >
     </template>
@@ -94,13 +106,15 @@
 </template>
 
 <script>
-import { computed, ref } from "@vue/reactivity";
+import { computed, reactive, ref } from "@vue/reactivity";
 import AppPopup from "../components/appPopup.vue";
 import ListCheckboxItem from "../components/listCheckboxItem.vue";
 import SelectListItem from "../components/selectListItem.vue";
 import AppTable from "../components/appTable.vue";
 import AppTableRow from "../components/appTableRow.vue";
 import AppInput from "../components/appInput.vue";
+import SelectedList from "../components/selectedList.vue";
+import SelectedListItem from "../components/selectedListItem.vue";
 import { useOwnTests } from "../use/ownTests";
 import { watchEffect } from "vue";
 import { useFetch } from "../use/fetch";
@@ -113,6 +127,8 @@ export default {
     AppTable,
     AppTableRow,
     AppInput,
+    SelectedList,
+    SelectedListItem,
   },
   setup() {
     const SUGGEST_AMOUNT = 7;
@@ -122,9 +138,19 @@ export default {
     const searchStudent = ref("");
     let chosenTests_temp = [];
     const { data: ownTests } = useOwnTests();
-    // let suggestedStudents = ref();
-    const studentTools = usePopupTools();
-    console.log(studentTools);
+    const studentTools = reactive({
+      ...usePopupTools(),
+      choosenStudents: [],
+      removeFromStudentList: (el) => {
+        studentTools.choosenStudents = studentTools.choosenStudents.filter(
+          (st) => st !== el
+        );
+      },
+      addToChosenList: (el) => {
+        if (studentTools.choosenStudents.includes(el)) return;
+        studentTools.choosenStudents.push(el);
+      },
+    });
 
     const chosenTests_detail = computed(() => {
       return ownTests.value?.filter((t) => chosenTests.value.includes(t._id));
@@ -171,32 +197,19 @@ export default {
     };
 
     const suggestStudents = async (searchValue) => {
-      studentTools.listCursor.value = null;
+      studentTools.listCursor = null;
 
-      if (searchValue === "") studentTools.contentList.value = [];
+      if (searchValue === "") {
+        studentTools.contentList = [];
+        return;
+      }
 
       const { response, request: getStudents } = useFetch(
         `api/user/uesrs-by-username/${searchValue}/${SUGGEST_AMOUNT}`
       );
       await getStudents();
-      studentTools.contentList.value = response.value;
+      studentTools.contentList = response.value;
     };
-
-    // const studentCursorDown = () => {
-    //   studentsCursor.value !== studentsList.value.length - 1
-    //     ? (studentsCursor.value += 1)
-    //     : (studentsCursor.value = 0);
-    // };
-
-    // const studentCursorUp = () => {
-    //   studentsCursor.value > 0
-    //     ? (studentsCursor.value -= 1)
-    //     : (studentsCursor.value = studentsList.value.length - 1);
-    // };
-
-    // const chooseStudent = () => {
-    //   console.log(studen)
-    // }
 
     watchEffect(() => suggestStudents(searchStudent.value));
 

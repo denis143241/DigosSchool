@@ -16,8 +16,8 @@ export function usePopupTools() {
       : (listCursor.value = contentList.value.length - 1);
   };
 
-  const chooseElement = () => {
-    return contentList.value[listCursor];
+  const chooseElement = (action) => {
+    return action(contentList.value[listCursor.value]);
   };
 
   return { listCursor, contentList, cursorDown, cursorUp, chooseElement };
